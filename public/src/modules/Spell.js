@@ -1,9 +1,11 @@
 "use strict";
 
-class Spell {
-    constructor() {
-        this.entity;
+import Effects from "./effects/effects.js"
+
+export default class Spell {
+    constructor(json = {}) {
         this.fight;
+        this.entity;
 
         this.id;
         this.name;
@@ -14,6 +16,7 @@ class Spell {
 
         this.minRange = 1;
         this.maxRange = 1;
+        this.computedMaxRange = null;
         this.boostRange = false;
 
         this.inLine = false;
@@ -32,15 +35,42 @@ class Spell {
         this.initialCountdown = 0;
 
         this.effects = [];
+
+        this.historic = [];
+
+        this.init(json);
+    }
+
+    init(json = {}) {
+        for (var i in json) {
+            this[i] = json[i];
+        }
     }
 
     isCell(x, y) {
-        var map = this.fight.map.tiles[x][y] == 0;
+        var map = this.fight.map.tiles;
+
+        if (map[x] && map[x][y] == 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    getComputedMaxRange() {
+        if (this.boostRange) {
+            var entityRange = this.entity.getCaracteristics().range;
+            this.computedMaxRange = Math.max(this.minRange, this.maxRange + entityRange);
+            return this.computedMaxRange;
+        }
+
+        this.computedMaxRange = this.maxRange;
+        return this.computedMaxRange;
     }
 
     inRange(x, y) {
         var range = Math.abs(x - this.entity.x) + Math.abs(y - this.entity.y);
-        return range >= this.minRange && range <= this.maxRange;
+        return range >= this.minRange && range <= (this.computedMaxRange || this.maxRange);
     }
 
     isFree(x, y) {
@@ -53,91 +83,112 @@ class Spell {
         return true;
     }
 
-    inLimitation(x, y) {
-        switch (this.castLimitation) {
-            case "line":
-                return x == this.entity.x || y == this.entity.y;
-            case "diagonal":
-                return Math.abs(x - this.entity.x) == Math.abs(y - this.entity.y);
-            default:
-                return true;
-        }
+    isTaken(x, y) {
+        return !this.isFree(x, y);
     }
 
-    inLineOfSight(x, y) {
-        if (!this.los) {
+    inLimitation(x, y) {
+        if (!this.inLine && !this.inDiagonal) {
             return true;
         }
 
-        var tiles = [];
-        var sx = this.entity.x;
-        var sy = this.entity.y;
-        var dx = x - sx;
-        var dy = y - sy;
-        var ystep, xstep = 1;
+        if (this.inLine && (x == this.entity.x || y == this.entity.y)) {
+            return true;
+        }
+
+        if (this.inDiagonal && (Math.abs(x - this.entity.x) == Math.abs(y - this.entity.y))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    inLineOfSight(x2, y2) {
+        var x1 = this.entity.x;
+        var y1 = this.entity.y;
+
+        var pts = [];
+
+        var y = y1;
+        var x = x1;
+
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+
+        var xstep, ystep;
 
         if (dy < 0) {
             ystep = -1;
             dy = -dy;
+        } else {
+            ystep = 1;
         }
 
         if (dx < 0) {
             xstep = -1;
             dx = -dx;
+        } else {
+            xstep = 1;
         }
 
-        if (dx * 2 >= dy * 2) {
-            var errorprev, error = dx;
+        var ddy = 2 * dy;
+        var ddx = 2 * dx;
+
+        if (ddx >= ddy) {
+            var errorprev = dx;
+            var error = dx;
             for (var i = 0; i < dx; i++) {
-                sx += xstep;
-                error += dx * 2;
-                if (error > dx * 2) {
+                x += xstep;
+                error += ddy;
+                if (error > ddx) {
                     y += ystep;
-                    error -= dx * 2;
-                    if (error + errorprev < dx * 2) {
-                        tiles.push({ x: x, y: y - ystep });
-                    } else if (error + errorprev > dx * 2) {
-                        tiles.push({ x: x - xstep, y: y });
+                    error -= ddx;
+
+                    if (error + errorprev < ddx) {
+                        pts.push({ 'x': x, 'y': y - ystep });
+                    } else if (error + errorprev > ddx) {
+                        pts.push({ 'x': x - xstep, 'y': y });
                     }
                 }
-                tiles.push({ x: x, y: y });
+                pts.push({ 'x': x, 'y': y });
                 errorprev = error;
             }
         } else {
-            var errorprev, error = dx;
+            errorprev = dy;
+            error = dy;
             for (var i = 0; i < dy; i++) {
-                sy += ystep;
-                error += dy * 2;
-                if (error > dy * 2) {
+                y += ystep;
+                error += ddx;
+                if (error > ddy) {
                     x += xstep;
-                    error -= dy * 2;
-                    if (error + errorprev < dy * 2) {
-                        tiles.push({ x: x - xstep, y: y });
-                    } else if (error + errorprev > dy * 2) {
-                        tiles.push({ x: x, y: y - ystep });
+                    error -= ddy;
+                    if (error + errorprev < ddy) {
+                        pts.push({ 'x': x - xstep, 'y': y });
+                    } else if (error + errorprev > ddy) {
+                        pts.push({ 'x': x, 'y': y - ystep });
                     }
                 }
-                tiles.push({ x: x, y: y });
+                pts.push({ 'x': x, 'y': y });
                 errorprev = error;
             }
         }
 
-        var mapTiles = this.fight.map.tiles;
-        for (var tile of tiles) {
-            if (mapTiles[tile.x][tile.y] == 1) {
+        //ON BOOLEEN
+        var map = this.fight.map.tiles;
+        for (var pt of pts) {
+            if (map[pt.x][pt.y] == 1) {
                 return false;
             }
         }
-
         return true;
     }
 
     getAoeTiles(x, y) {
         var tiles = [];
-        for (var i = 0; i < this.aoe.length / 2; i++) {
-            for (var j = 0; j < this.aoe[i].length; j++) {
-                var cx = x + i - Math.abs(this.aoe.length / 2);
-                var cy = y + j - Math.abs(this.aoe[i].length / 2);
+        for (var i = 0; i < Math.ceil(this.aoe.length / 2); i++) {
+            for (var j = 0; j < Math.ceil(this.aoe[i].length / 2); j++) {
+                var cx = x + i - Math.abs(Math.ceil(this.aoe.length / 2));
+                var cy = y + j - Math.abs(Math.ceil(this.aoe[i].length / 2));
                 tiles.push({
                     x: cx,
                     y: cy
@@ -165,8 +216,109 @@ class Spell {
         return affectedEntities;
     }
 
-    //use
-    use(x, y) {
+    getCastableCells() {
+        this.getComputedMaxRange();
 
+        var castableCells = [];
+        var tiles = this.fight.map.tiles;
+        for (var x = 0; x < tiles.length; x++) {
+            for (var y = 0; y < tiles[x].length; y++) {
+                if (this.fastCastCheck(x, y)) {
+                    var cell = { x: x, y: y };
+                    if (this.checkCast(x, y, false)) {
+                        cell.cast = true;
+                    }
+                    castableCells.push(cell);
+                }
+            }
+        }
+
+        return castableCells;
+    }
+
+    fastCastCheck(x, y) {
+        if (!this.isCell(x, y)) {
+            return false;
+        }
+
+        if (!this.inRange(x, y)) {
+            return false;
+        }
+
+        if (!this.inLimitation(x, y)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    checkCast(x, y, needFastCheck = true) {
+        if (needFastCheck && !this.fastCastCheck(x, y)) {
+            return false;
+        }
+
+        if (this.freeCell && !this.isFree(x, y)) {
+            return false;
+        }
+
+        if (this.takenCell && !this.isTaken(x, y)) {
+            return false;
+        }
+
+        if (this.los && !this.inLineOfSight(x, y)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    //use
+    cast(x, y) {
+        this.getComputedMaxRange();
+
+        if (!this.checkCast(x, y)) {
+            return false;
+        }
+
+        if (this.apCost > this.entity.getCaracteristics().ap) {
+            return false;
+        }
+
+        this.entity.currentCharacteristics.usedAp += this.apCost;
+
+        //Entities
+        for (var entity of this.getAffectedEntities(x, y)) {
+            for (var effect of this.effects) {
+                if (Effects[effect.effect]) {
+                    var e = new (Effects[effect.effect])({
+                        fight: this.fight,
+                        spell: this,
+                        source: this.entity,
+                        target: entity,
+                        x: x,
+                        y: y
+                    });
+                    e.onCast();
+                }
+            }
+        }
+
+        //Tiles
+        for (var tile of this.getAoeTiles(x, y)) {
+            for (var effect of this.effects) {
+                if (Effects[effect.effect]) {
+                    var e = new (Effects[effect.effect])({
+                        fight: this.fight,
+                        spell: this,
+                        source: this.entity,
+                        x: x,
+                        y: y,
+                        cx: tile.x,
+                        cy: tile.y
+                    });
+                    e.onCast();
+                }
+            }
+        }
     }
 }

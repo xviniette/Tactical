@@ -8,6 +8,8 @@ export default class Effect {
         this.spell;
         this.x;
         this.y;
+        this.cx;
+        this.cy;
 
         this.characteristic;
         this.value = 0;
@@ -21,5 +23,6 @@ export default class Effect {
         }
     }
 
-    onCast() { }
+    onCast() { 
+    }
 }
