@@ -7,6 +7,7 @@ export default class Fight {
         this.turn = 0;
         this.currentEntity = null;
         this.timer = null;
+        this.turnTime = 5000;
 
         this.init(json)
     }
@@ -19,7 +20,7 @@ export default class Fight {
 
     start() {
         this.entities.forEach((entity) => {
-            entity.getCaracteristics();
+            entity.getCharacteristics();
         });
 
         this.entities.sort((a, b) => {
@@ -52,12 +53,13 @@ export default class Fight {
         }
 
         this.currentEntity = entity;
-        console.log(this.currentEntity);
 
-        // clearTimeout(this.timer);
-        // this.timer = setTimeout(() => {
-        //     entity.endTurn();
-        // }, 10 * 1000);
+        clearTimeout(this.timer);
+        if (this.turnTime) {
+            this.timer = setTimeout(() => {
+                entity.endTurn();
+            }, this.turnTime);
+        }
 
         entity.play();
     }

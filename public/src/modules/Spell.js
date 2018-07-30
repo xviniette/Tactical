@@ -59,7 +59,7 @@ export default class Spell {
 
     getComputedMaxRange() {
         if (this.boostRange) {
-            var entityRange = this.entity.getCaracteristics().range;
+            var entityRange = this.entity.getCharacteristics().range;
             this.computedMaxRange = Math.max(this.minRange, this.maxRange + entityRange);
             return this.computedMaxRange;
         }
@@ -184,17 +184,29 @@ export default class Spell {
     }
 
     getAoeTiles(x, y) {
+        console.log(x, y);
         var tiles = [];
-        for (var i = 0; i < Math.ceil(this.aoe.length / 2); i++) {
-            for (var j = 0; j < Math.ceil(this.aoe[i].length / 2); j++) {
-                var cx = x + i - Math.abs(Math.ceil(this.aoe.length / 2));
-                var cy = y + j - Math.abs(Math.ceil(this.aoe[i].length / 2));
+        for (var i = 0; i < this.aoe.length; i++) {
+            for (var j = 0; j < this.aoe[i].length; j++) {
+                if(this.aoe[i][j] != 1){
+                    continue;
+                }
+
+                var cx = x + i - Math.floor(this.aoe.length / 2);
+                var cy = y + j - Math.floor(this.aoe[i].length / 2);
+
+                if(!this.isCell(cx, cy)){
+                    continue;
+                }
+                
                 tiles.push({
                     x: cx,
                     y: cy
                 });
             }
         }
+
+        console.log(tiles);
         return tiles;
     }
 
@@ -280,7 +292,7 @@ export default class Spell {
             return false;
         }
 
-        if (this.apCost > this.entity.getCaracteristics().ap) {
+        if (this.apCost > this.entity.getCharacteristics().ap) {
             return false;
         }
 
@@ -296,7 +308,9 @@ export default class Spell {
                         source: this.entity,
                         target: entity,
                         x: x,
-                        y: y
+                        y: y,
+                        cx: entity.x,
+                        cy: entity.y
                     });
                     e.onCast();
                 }

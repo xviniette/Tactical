@@ -10,7 +10,7 @@
       </template>
 
       <!-- movementTiles -->
-      <template v-if="movementTiles && !selectedSpell" v-for="tile in movementTiles">
+      <template v-if="movementTiles" v-for="tile in movementTiles">
           <rect @click="move(tile.x, tile.y)" :x="tilesize * tile.x" :y="tilesize * tile.y" :width="tilesize" :height="tilesize" style="fill:rgba(0,200,0,0.5);stroke-width:1;stroke:rgb(0,0,0)"/>
       </template>
 
@@ -27,6 +27,9 @@
 </svg>
 <button @click="endTurn">END</button>
 <ul><li v-for="spell in entitySpells"><a href="#" @click.prevent="selectedSpell = spell">{{spell.name}} ({{spell.apCost}} PA)</a></li></ul>
+<div v-if="fight && fight.entities" v-for="entity of fight.entities">
+{{entity.name}} {{entity.characteristics.currentLife}}/{{entity.characteristics.maxLife}} {{entity.characteristics.ap}} {{entity.characteristics.mp}}
+</div>
   </div>
 </template>
 
@@ -61,6 +64,18 @@ export default {
           maxRange: 5,
           turnCast: 1,
           effects: [{ effect: "jump" }]
+        },
+        {
+          id: 3,
+          name: "Taper Loin",
+          apCost: 3,
+          minRange: 4,
+          maxRange: 15,
+          aoe: [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
+          inLine: true,
+          los: false,
+          turnCast: 1,
+          effects: [{ effect: "damage", damage: 10 }]
         }
       ],
       mouse: {
@@ -124,14 +139,13 @@ export default {
         x: 2,
         y: 3,
         fight: this.fight
+      }),
+      new Player({
+        name: "ElBazia",
+        x: 7,
+        y: 9,
+        fight: this.fight
       })
-      // new Player({
-      //   name: "Elgringo",
-      //   x: 7,
-      //   y: 9,
-      //   spells: this.spells,
-      //   fight: this.fight
-      // })
     ];
 
     for (var entity of this.fight.entities) {

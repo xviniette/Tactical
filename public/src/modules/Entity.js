@@ -18,6 +18,7 @@ export default class Entity {
             erosion: 10,
             initiative: 0,
             power: 0,
+            damage: 0,
             range: 0,
         }
 
@@ -47,7 +48,7 @@ export default class Entity {
 
     }
 
-    getCaracteristics() {
+    getCharacteristics() {
         var characteristics = JSON.parse(JSON.stringify(this.defaultCharacteristics));
 
         for (var effect of this.effects) {
@@ -102,7 +103,7 @@ export default class Entity {
             return false;
         }
 
-        if (path.path.length > this.getCaracteristics().mp) {
+        if (path.path.length > this.getCharacteristics().mp) {
             return false;
         }
 
@@ -115,7 +116,7 @@ export default class Entity {
     }
 
     getMovementTiles() {
-        var MP = this.getCaracteristics().mp;
+        var MP = this.getCharacteristics().mp;
         var tiles = [];
         var mapTiles = this.fight.map.tiles;
         var toProcess = [];
@@ -170,11 +171,22 @@ export default class Entity {
         if (this.myTurn()) {
             this.currentCharacteristics.usedAp = 0;
             this.currentCharacteristics.usedMp = 0;
+            this.getCharacteristics();
             this.fight.nextEntity();
             return true;
         }
 
         return false;
+    }
+
+    impactLife(delta) {
+        var characteristics = this.getCharacteristics();
+        if (delta <= 0) {
+            this.currentCharacteristics.damageTaken -= delta;
+            this.currentCharacteristics.erosionTaken -= delta * Math.min(50, characteristics.erosion) / 100;
+        } else {
+            this.currentCharacteristics.damageTaken -= Math.min(Math.abs(delta), characteristics.maxLife - characteristics.currentLife);
+        }
     }
 
 }
