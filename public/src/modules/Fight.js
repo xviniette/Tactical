@@ -8,6 +8,7 @@ export default class Fight {
         this.currentEntity = null;
         this.timer = null;
         this.turnTime = 5000;
+        this.seed = Math.round(Math.random() * 4294967296);
 
         this.init(json)
     }
@@ -62,5 +63,21 @@ export default class Fight {
         }
 
         entity.play();
+    }
+
+    random(min = null, max = null) {
+        this.seed = (1664525 * this.seed + 1013904223) % 4294967296;
+
+        var random = this.seed / 4294967296;
+
+        if (min == null && max == null) {
+            return random;
+        }
+
+        if (max == null) {
+            return Math.floor(random * (min + 1))
+        }
+
+        return Math.floor((max + 1 - min) * random + min);
     }
 }

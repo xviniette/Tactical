@@ -72,7 +72,6 @@ export default {
           minRange: 4,
           maxRange: 15,
           aoe: [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
-          inLine: true,
           los: false,
           turnCast: 1,
           effects: [{ effect: "damage", damage: 10 }]

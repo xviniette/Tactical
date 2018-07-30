@@ -14,7 +14,7 @@ export default class Damage extends Effect {
 
     onCast() {
         if (this.target) {
-            var damage = this.damage + this.damage * Math.max(this.caster.getCharacteristics().power, 0) + Math.max(this.caster.getCharacteristics().damage, 0);
+            var damage = this.damage + this.damage * Math.max(this.source.getCharacteristics().power, 0) + Math.max(this.source.getCharacteristics().damage, 0);
             this.target.impactLife(-damage);
             this.target.getCharacteristics();
         }
