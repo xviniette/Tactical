@@ -34,6 +34,8 @@ export default class Spell {
         this.cooldown = 0;
         this.initialCountdown = 0;
 
+        this.incompatibleSpells = [];
+
         this.effects = [];
 
         this.historic = [];
@@ -188,17 +190,17 @@ export default class Spell {
         var tiles = [];
         for (var i = 0; i < this.aoe.length; i++) {
             for (var j = 0; j < this.aoe[i].length; j++) {
-                if(this.aoe[i][j] != 1){
+                if (this.aoe[i][j] != 1) {
                     continue;
                 }
 
                 var cx = x + i - Math.floor(this.aoe.length / 2);
                 var cy = y + j - Math.floor(this.aoe[i].length / 2);
 
-                if(!this.isCell(cx, cy)){
+                if (!this.isCell(cx, cy)) {
                     continue;
                 }
-                
+
                 tiles.push({
                     x: cx,
                     y: cy

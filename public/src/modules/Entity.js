@@ -32,7 +32,7 @@ export default class Entity {
         this.characteristics = {};
 
         this.spells = [];
-        this.equipments = [];
+        this.items = [];
         this.effects = [];
 
         this.init(json);
@@ -181,12 +181,17 @@ export default class Entity {
 
     impactLife(delta) {
         var characteristics = this.getCharacteristics();
+        var value;
         if (delta <= 0) {
-            this.currentCharacteristics.damageTaken -= delta;
-            this.currentCharacteristics.erosionTaken -= delta * Math.min(50, characteristics.erosion) / 100;
+            value = -Math.min(Math.abs(delta), characteristics.currentLife);
+            this.currentCharacteristics.damageTaken -= value;
+            this.currentCharacteristics.erosionTaken -= Math.floor(value * Math.min(50, characteristics.erosion) / 100);
         } else {
-            this.currentCharacteristics.damageTaken -= Math.min(Math.abs(delta), characteristics.maxLife - characteristics.currentLife);
+            value = Math.min(Math.abs(delta), characteristics.maxLife - characteristics.currentLife);
+            this.currentCharacteristics.damageTaken -= value;
         }
+
+        return value;
     }
 
 }

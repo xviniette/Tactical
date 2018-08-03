@@ -126,9 +126,9 @@ export default {
     }
   },
   mounted() {
-    this.fight = new Fight({
-      map: new Map(0)
-    });
+    this.fight = new Fight({});
+
+    this.fight.map = new Map({ fight: this.fight });
 
     window.f = this.fight;
 

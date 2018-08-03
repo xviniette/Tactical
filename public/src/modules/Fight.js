@@ -7,7 +7,7 @@ export default class Fight {
         this.turn = 0;
         this.currentEntity = null;
         this.timer = null;
-        this.turnTime = 5000;
+        this.turnTime = null;
         this.seed = Math.round(Math.random() * 4294967296);
 
         this.init(json)
