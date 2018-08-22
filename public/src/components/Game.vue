@@ -37,6 +37,7 @@
 import Fight from "../modules/Fight.js";
 import Map from "../modules/Map.js";
 import Player from "../modules/Player.js";
+import AI from "../modules/AI.js";
 import Spell from "../modules/Spell.js";
 
 window.f;
@@ -54,7 +55,7 @@ export default {
           apCost: 3,
           maxRange: 3,
           turnCast: 1,
-          effects: [{ effect: "damage", damage: 10 }]
+          effects: [{ effect: "damage" }]
         },
         {
           id: 2,
@@ -135,13 +136,19 @@ export default {
     this.fight.entities = [
       new Player({
         name: "Elgringo",
-        x: 2,
-        y: 3,
+        x: 6,
+        y: 8,
         fight: this.fight
       }),
       new Player({
         name: "ElBazia",
         x: 7,
+        y: 9,
+        fight: this.fight
+      }),
+      new AI({
+        name: "AI",
+        x: 9,
         y: 9,
         fight: this.fight
       })

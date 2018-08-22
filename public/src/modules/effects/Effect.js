@@ -14,6 +14,14 @@ export default class Effect {
         this.characteristic;
         this.value = 0;
 
+        //Events
+        this.onCast = false;
+
+        var defaultData = this.constructor.defaultData();
+        for (var attr in defaultData) {
+            this[attr] = defaultData[attr];
+        }
+
         this.init(json);
     }
 
@@ -23,6 +31,17 @@ export default class Effect {
         }
     }
 
-    onCast() { 
+    static defaultData() {
+        return {};
+    }
+
+    execute() {
+        return false;
+    }
+
+    cast() {
+        if (this.onCast) {
+            this.execute();
+        }
     }
 }

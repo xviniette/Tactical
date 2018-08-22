@@ -72,4 +72,12 @@ export default class Map {
         });
     }
 
+    isTaken(x, y) {
+        return this.getCellEntity(x, y) != null;
+    }
+
+    isFree(x, y) {
+        return !this.isTaken(x, y);
+    }
+
 }

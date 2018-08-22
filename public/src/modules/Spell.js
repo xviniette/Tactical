@@ -186,7 +186,6 @@ export default class Spell {
     }
 
     getAoeTiles(x, y) {
-        console.log(x, y);
         var tiles = [];
         for (var i = 0; i < this.aoe.length; i++) {
             for (var j = 0; j < this.aoe[i].length; j++) {
@@ -208,7 +207,6 @@ export default class Spell {
             }
         }
 
-        console.log(tiles);
         return tiles;
     }
 
@@ -304,7 +302,7 @@ export default class Spell {
         for (var entity of this.getAffectedEntities(x, y)) {
             for (var effect of this.effects) {
                 if (Effects[effect.effect]) {
-                    var e = new (Effects[effect.effect])({
+                    var e = new (Effects[effect.effect])(Object.assign({
                         fight: this.fight,
                         spell: this,
                         source: this.entity,
@@ -313,8 +311,8 @@ export default class Spell {
                         y: y,
                         cx: entity.x,
                         cy: entity.y
-                    });
-                    e.onCast();
+                    }, effect));
+                    e.cast();
                 }
             }
         }
@@ -323,7 +321,7 @@ export default class Spell {
         for (var tile of this.getAoeTiles(x, y)) {
             for (var effect of this.effects) {
                 if (Effects[effect.effect]) {
-                    var e = new (Effects[effect.effect])({
+                    var e = new (Effects[effect.effect])(Object.assign({
                         fight: this.fight,
                         spell: this,
                         source: this.entity,
@@ -331,8 +329,8 @@ export default class Spell {
                         y: y,
                         cx: tile.x,
                         cy: tile.y
-                    });
-                    e.onCast();
+                    }, effect));
+                    e.cast();
                 }
             }
         }
