@@ -25,6 +25,18 @@
           <circle :cx="tilesize * entity.x + tilesize/2" :cy="tilesize * entity.y + tilesize/2" :r="tilesize/3" style="fill:rgb(0,255,255);stroke-width:1;stroke:rgb(0,0,0)"/>
       </template>
 </svg>
+
+    <svg width="800" height="800" v-if="fight">
+      <!-- map -->
+      <template v-for="(tiles, x) in fight.map.tiles">
+        <template v-for="(tile, y) in tiles">
+          <image xlink:href="../assets/tile.svg" :x="(x - y) * tilesize/2 + 400" :y="(x + y) * tilesize/4" viewBox="0 0 212 106" :width="tilesize" :height="tilesize/2"/>
+        </template>
+      </template>
+</svg>
+
+<img src="../assets/tile.svg">
+
 <button @click="endTurn">END</button>
 <ul><li v-for="spell in entitySpells"><a href="#" @click.prevent="selectedSpell = spell">{{spell.name}} ({{spell.apCost}} PA)</a></li></ul>
 <div v-if="fight && fight.entities" v-for="entity of fight.entities">
