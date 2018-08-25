@@ -177,15 +177,23 @@ export default class Spell {
 
         //ON BOOLEEN
         var map = this.fight.map.tiles;
-        for (var pt of pts) {
-            if (map[pt.x][pt.y] == 1) {
+        for (var i = 0; i < pts.length - 1; i++) {
+            var pt = pts[i];
+            if (map[pt.x][pt.y] == 1 || this.fight.entities.find((e) => { return e.x == pt.x && e.y == pt.y })) {
                 return false;
             }
         }
         return true;
     }
 
-    getAoeTiles(x, y) {
+    getAoeTiles(x, y, angle = undefined) {
+        if (angle == undefined) {
+            angle = Math.atan2(y - this.entity.y, x - this.entity.x);
+        }
+
+        var centerX = Math.floor((this.aoe.length - 1) / 2);
+        var centerY = Math.floor((this.aoe[0].length - 1) / 2);
+
         var tiles = [];
         for (var i = 0; i < this.aoe.length; i++) {
             for (var j = 0; j < this.aoe[i].length; j++) {
@@ -193,8 +201,14 @@ export default class Spell {
                     continue;
                 }
 
-                var cx = x + i - Math.floor(this.aoe.length / 2);
-                var cy = y + j - Math.floor(this.aoe[i].length / 2);
+                var distance = Math.sqrt(Math.pow(i - centerX, 2) + Math.pow(j - centerY, 2));
+                var oldAngle = Math.atan2(j - centerY, i - centerX);
+
+                var rotatedI = Math.round(distance * Math.cos(oldAngle + angle));
+                var rotatedJ = Math.round(distance * Math.sin(oldAngle + angle));
+
+                var cx = x + rotatedI;
+                var cy = y + rotatedJ;
 
                 if (!this.isCell(cx, cy)) {
                     continue;
@@ -206,7 +220,6 @@ export default class Spell {
                 });
             }
         }
-
         return tiles;
     }
 
@@ -296,7 +309,7 @@ export default class Spell {
             return false;
         }
 
-        this.entity.currentCharacteristics.usedAp += this.apCost;
+        this.entity.currentCharacteristics.usedAP += this.apCost;
 
         //Entities
         for (var entity of this.getAffectedEntities(x, y)) {

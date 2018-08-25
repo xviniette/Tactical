@@ -13,20 +13,22 @@ export default class Entity {
 
         this.defaultCharacteristics = {
             ap: 6,
-            mp: 3,
+            mp: 6,
             life: 100,
             erosion: 10,
             initiative: 0,
             power: 0,
             damage: 0,
             range: 0,
+            dodge: 100,
+            lock: 0
         }
 
         this.currentCharacteristics = {
             damageTaken: 0,
             erosionTaken: 0,
-            usedAp: 0,
-            usedMp: 0
+            usedAP: 0,
+            usedMP: 0
         }
 
         this.characteristics = {};
@@ -66,8 +68,8 @@ export default class Entity {
         characteristics.maxLife = Math.max(1, characteristics.life - this.currentCharacteristics.erosionTaken);
         characteristics.currentLife = Math.min(characteristics.life - this.currentCharacteristics.damageTaken, characteristics.maxLife);
 
-        characteristics.ap -= this.currentCharacteristics.usedAp;
-        characteristics.mp -= this.currentCharacteristics.usedMp;
+        characteristics.ap -= this.currentCharacteristics.usedAP;
+        characteristics.mp -= this.currentCharacteristics.usedMP;
 
         this.characteristics = characteristics;
         return characteristics;
@@ -95,31 +97,55 @@ export default class Entity {
         }
 
         var moveTiles = this.getMovementTiles();
-        var path = moveTiles.find((tile) => {
-            return tile.x == x && tile.y == y;
+        var tile = moveTiles.find((t) => {
+            return t.x == x && t.y == y;
         })
 
-        if (!path) {
+        if (!tile) {
             return false;
         }
 
-        if (path.path.length > this.getCharacteristics().mp) {
+        if (!tile.reachable) {
             return false;
         }
 
-        this.currentCharacteristics.usedMp += path.path.length;
+        this.currentCharacteristics.usedMP += tile.usedMP;
+        this.currentCharacteristics.usedAP += tile.usedAP;
 
-        this.x = path.x;
-        this.y = path.y;
+        this.x = tile.x;
+        this.y = tile.y;
 
-        return path.path;
+        console.log(tile);
+
+        return tile;
     }
 
     getMovementTiles() {
-        var MP = this.getCharacteristics().mp;
+        var characteristics = this.getCharacteristics();
+        var MP = characteristics.mp;
+        var AP = characteristics.ap;
         var tiles = [];
         var mapTiles = this.fight.map.tiles;
         var toProcess = [];
+
+        var getDodgeLoss = (x, y) => {
+            var left = 1;
+
+            for (var i = x - 1; i <= x + 1; i++) {
+                for (var j = y - 1; j <= y + 1; j++) {
+                    if (Math.abs(x - i) + Math.abs(y - j) == 1) {
+                        var entity = this.fight.entities.find((e) => {
+                            return e.x == i && e.y == j && e.team != this.team;
+                        });
+
+                        if (entity) {
+                            left *= Math.max(0, Math.min(1, (characteristics.dodge + 2) / (2 * (entity.getCharacteristics().lock + 2))));
+                        }
+                    }
+                }
+            }
+            return Math.min(1, Math.max(0, 1 - left));
+        }
 
         var processTile = (parentTile) => {
             for (var a = 0; a < Math.PI * 2; a += Math.PI / 2) {
@@ -140,21 +166,38 @@ export default class Entity {
                     continue;
                 }
 
-                //exist
-                if (tiles.find((t) => {
-                    return t.x == tile.x && t.y == tile.y
+                //Entity on tile
+                if (this.fight.entities.find((e) => {
+                    return e.x == tile.x && e.y == tile.y;
                 })) {
                     continue;
                 }
 
-                var t = { x: tile.x, y: tile.y, path: [...parentTile.path, [{ x: tile.x, y: tile.y }]] };
+                //loss
+                var t = { x: tile.x, y: tile.y, path: [...parentTile.path, [{ x: tile.x, y: tile.y }]], usedMP: parentTile.usedMP + Math.round(parentTile.loss * (MP - parentTile.usedMP)), usedAP: parentTile.usedAP + Math.round(parentTile.loss * (AP - parentTile.usedAP)), loss: getDodgeLoss(tile.x, tile.y) };
+                t.reachable = t.usedMP < MP;
+                if (t.reachable) {
+                    t.usedMP += 1;
+                }
+
+                //exist
+                var existingTile = tiles.findIndex((t) => {
+                    return t.x == tile.x && t.y == tile.y
+                });
+
+                if (existingTile != -1) {
+                    if (tiles[existingTile].usedMP > t.usedMP) {
+                        tiles[existingTile] = t;
+                    }
+                    continue;
+                }
 
                 tiles.push(t);
                 toProcess.push(t);
             }
         }
 
-        processTile({ x: this.x, y: this.y, path: [] });
+        processTile({ x: this.x, y: this.y, path: [], usedMP: 0, usedAP: 0, loss: getDodgeLoss(this.x, this.y) });
         while (toProcess.length > 0) {
             var t = toProcess[0];
             processTile(t);
@@ -169,8 +212,8 @@ export default class Entity {
 
     endTurn() {
         if (this.myTurn()) {
-            this.currentCharacteristics.usedAp = 0;
-            this.currentCharacteristics.usedMp = 0;
+            this.currentCharacteristics.usedAP = 0;
+            this.currentCharacteristics.usedMP = 0;
             this.getCharacteristics();
             this.fight.nextEntity();
             return true;

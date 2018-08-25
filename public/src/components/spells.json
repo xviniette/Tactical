@@ -1,0 +1,30 @@
+[
+    {
+      "id": 1,
+      "name": "Taper",
+      "apCost": 3,
+      "maxRange": 3,
+      "turnCast": 1,
+      "effects": [{ "effect": "damage" }]
+    },
+    {
+      "id": 2,
+      "name": "Sauter",
+      "apCost": 6,
+      "minRange": 3,
+      "maxRange": 5,
+      "turnCast": 1,
+      "effects": [{ "effect": "jump" }]
+    },
+    {
+      "id": 3,
+      "name": "Taper Loin",
+      "apCost": 3,
+      "minRange": 4,
+      "maxRange": 15,
+      "aoe": [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
+      "los": false,
+      "turnCast": 1,
+      "effects": [{ "effect": "damage", "damage": 10 }]
+    }
+  ]

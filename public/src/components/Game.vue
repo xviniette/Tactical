@@ -1,6 +1,6 @@
 <template>
   <div>
-    <svg width="800" height="800" v-if="fight">
+    <svg width="800" height="600" v-if="fight">
       <!-- map -->
       <template v-for="(tiles, x) in fight.map.tiles">
         <template v-for="(tile, y) in tiles">
@@ -11,7 +11,7 @@
 
       <!-- movementTiles -->
       <template v-if="movementTiles" v-for="tile in movementTiles">
-          <rect @click="move(tile.x, tile.y)" :x="tilesize * tile.x" :y="tilesize * tile.y" :width="tilesize" :height="tilesize" style="fill:rgba(0,200,0,0.5);stroke-width:1;stroke:rgb(0,0,0)"/>
+          <rect @click="move(tile.x, tile.y)" :x="tilesize * tile.x" :y="tilesize * tile.y" :width="tilesize" :height="tilesize" :class="{'green':tile.reachable, 'red':!tile.reachable}"/>
       </template>
 
       <!-- spellTiles -->
@@ -26,16 +26,14 @@
       </template>
 </svg>
 
-    <svg width="800" height="800" v-if="fight">
-      <!-- map -->
+    <!-- <svg width="800" height="800" v-if="fight">
       <template v-for="(tiles, x) in fight.map.tiles">
         <template v-for="(tile, y) in tiles">
-          <image xlink:href="../assets/tile.svg" :x="(x - y) * tilesize/2 + 400" :y="(x + y) * tilesize/4" viewBox="0 0 212 106" :width="tilesize" :height="tilesize/2"/>
+          <image v-if="tile == 0" xlink:href="../assets/tile.svg" :x="(x - y) * tilesize/2 + 400" :y="(x + y) * tilesize/4" viewBox="0 0 212 106" :width="tilesize" :height="tilesize/2"/>
+          <image v-if="tile == 1" xlink:href="../assets/arbre.svg" :x="(x - y) * tilesize/2 + 400" :y="(x + y) * tilesize/4 - tilesize * 0.4" viewBox="0 0 800 106" :width="tilesize"/>
         </template>
       </template>
-</svg>
-
-<img src="../assets/tile.svg">
+</svg> -->
 
 <button @click="endTurn">END</button>
 <ul><li v-for="spell in entitySpells"><a href="#" @click.prevent="selectedSpell = spell">{{spell.name}} ({{spell.apCost}} PA)</a></li></ul>
@@ -64,10 +62,12 @@ export default {
         {
           id: 1,
           name: "Taper",
-          apCost: 3,
+          apCost: 0,
           maxRange: 3,
           turnCast: 1,
-          effects: [{ effect: "damage" }]
+          effects: [{ effect: "damage" }],
+          aoe: [[0], [1], [1]],
+          inLine: true
         },
         {
           id: 2,
@@ -150,13 +150,15 @@ export default {
         name: "Elgringo",
         x: 6,
         y: 8,
-        fight: this.fight
+        fight: this.fight,
+        team: 1
       }),
       new Player({
         name: "ElBazia",
         x: 7,
         y: 9,
-        fight: this.fight
+        fight: this.fight,
+        team: 2
       }),
       new AI({
         name: "AI",
@@ -182,4 +184,15 @@ export default {
 </script>
 
 <style scoped>
+.green {
+  fill: rgba(4, 179, 12, 0.5);
+  stroke-width: 1;
+  stroke: rgb(0, 0, 0);
+}
+
+.red {
+  fill: rgba(255, 0, 0, 0.5);
+  stroke-width: 1;
+  stroke: rgb(0, 0, 0);
+}
 </style>

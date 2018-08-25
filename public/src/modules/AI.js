@@ -6,6 +6,8 @@ export default class AI extends Entity {
     constructor(json) {
         super(json);
 
+        this.aggressive = true;
+
         this.init(json);
     }
 
