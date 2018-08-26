@@ -75,7 +75,7 @@ export default class AI extends Entity {
         }
 
         console.log("FINI ");
-        return;
+        // return;
         setTimeout(() => {
             this.endTurn();
         }, 1000);

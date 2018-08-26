@@ -204,7 +204,7 @@ export default class Spell {
         var map = this.fight.map.tiles;
         for (var i = 0; i < pts.length - 1; i++) {
             var pt = pts[i];
-            if (map[pt.x][pt.y] == 1 || this.fight.entities.find((e) => { return e.x == pt.x && e.y == pt.y })) {
+            if (map[pt.x][pt.y] == 1 || this.fight.entities.find((e) => { return e.x == pt.x && e.y == pt.y && e.id != this.entity.id })) {
                 return false;
             }
         }
