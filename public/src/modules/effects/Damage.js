@@ -9,7 +9,7 @@ export default class Damage extends Effect {
 
     static defaultData() {
         return {
-            damage: 20,
+            damage: 1,
             onCast: true
         }
     }
@@ -23,7 +23,7 @@ export default class Damage extends Effect {
                 this.target.getCharacteristics();
             }
 
-            return { ai: damage }
+            return { ai: damage + 1000 }
         }
 
         return false;

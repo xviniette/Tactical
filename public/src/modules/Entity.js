@@ -13,7 +13,7 @@ export default class Entity {
 
         this.defaultCharacteristics = {
             ap: 6,
-            mp: 6,
+            mp: 3,
             life: 100000,
             erosion: 10,
             initiative: 0,
@@ -120,7 +120,7 @@ export default class Entity {
         return tile;
     }
 
-    getMovementTiles() {
+    getMovementTiles(needStartTile = false) {
         var characteristics = this.getCharacteristics();
         var MP = characteristics.mp;
         var AP = characteristics.ap;
@@ -197,11 +197,17 @@ export default class Entity {
             }
         }
 
-        processTile({ x: this.x, y: this.y, path: [], usedMP: 0, usedAP: 0, loss: getDodgeLoss(this.x, this.y) });
+        var startTile = { x: this.x, y: this.y, path: [], usedMP: 0, usedAP: 0, loss: getDodgeLoss(this.x, this.y) };
+
+        processTile(startTile);
         while (toProcess.length > 0) {
             var t = toProcess[0];
             processTile(t);
             toProcess.splice(0, 1);
+        }
+
+        if(needStartTile){
+            tiles.unshift(startTile);
         }
         return tiles;
     }

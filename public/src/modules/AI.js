@@ -28,9 +28,9 @@ export default class AI extends Entity {
 
             var castables = [];
 
-            var movementTiles = this.getMovementTiles();
+            var movementTiles = this.getMovementTiles(true);
             var characteristics = this.getCharacteristics();
-
+            
             for (var spell of this.spells) {
                 if (!(spell.canUse() && spell.checkCooldown())) {
                     continue;
@@ -45,7 +45,7 @@ export default class AI extends Entity {
                         for (var y = 0; y < this.fight.map.tiles[x].length; y++) {
                             var score = spell.cast(movementTile.x, movementTile.y, x, y, false);
                             if (score && score > 0) {
-                                castables.push({ score: score, movementTile: movementTile, x: x, y: y, spell: spell });
+                                castables.push({ score: score - movementTile.usedAP - movementTile.usedMP, movementTile: movementTile, x: x, y: y, spell: spell });
                             }
                         }
                     }
@@ -68,7 +68,7 @@ export default class AI extends Entity {
         }
 
         console.log("FINI ");
-        return;
+        // return;
         setTimeout(() => {
             this.endTurn();
         }, 1000);
