@@ -30,8 +30,9 @@ export default class AI extends Entity {
 
             var movementTiles = this.getMovementTiles(true);
             var characteristics = this.getCharacteristics();
-            
+
             for (var spell of this.spells) {
+                console.log("spell", spell.name);
                 if (!(spell.canUse() && spell.checkCooldown())) {
                     continue;
                 }
@@ -50,6 +51,10 @@ export default class AI extends Entity {
                         }
                     }
                 }
+
+                if (castables.length > 0) {
+                    break;
+                }
             }
 
             if (castables.length > 0) {
@@ -58,7 +63,9 @@ export default class AI extends Entity {
                 });
 
                 var cast = castables[0];
-                
+
+                console.log("possibilités", castables);
+
                 console.log("cast", cast);
 
                 this.move(cast.movementTile.x, cast.movementTile.y);
@@ -68,7 +75,7 @@ export default class AI extends Entity {
         }
 
         console.log("FINI ");
-        // return;
+        return;
         setTimeout(() => {
             this.endTurn();
         }, 1000);

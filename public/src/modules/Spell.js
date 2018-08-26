@@ -465,7 +465,7 @@ export default class Spell {
         var aiScore = 0;
 
         //Entities
-        for (var entity of this.getAffectedEntities(this.getAoeTiles(x1, y1, x2, y2))) {
+        for (var entity of this.getAffectedEntities(this.getAoeTiles(x1, y1, x2, y2), x1, y1)) {
             for (var effect of this.effects) {
                 if (Effects[effect.effect]) {
                     var e = new (Effects[effect.effect])(Object.assign({

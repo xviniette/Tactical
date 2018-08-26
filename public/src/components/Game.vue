@@ -63,8 +63,8 @@ export default {
           id: 1,
           name: "Taper",
           apCost: 4,
-          maxRange: 3,
-          minRange: 3,
+          maxRange: 10,
+          minRange: 5,
           effects: [{ effect: "damage", damage: 10 }],
           aoe: [[1]],
           inLine: true
@@ -73,11 +73,10 @@ export default {
           id: 2,
           name: "Taper2",
           apCost: 1,
-          maxRange: 5,
+          maxRange: 4,
           minRange: 4,
           effects: [{ effect: "damage", damage: 3 }],
           aoe: [[1]],
-          inDiagonal: true
         }
         // {
         //   id: 2,

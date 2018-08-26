@@ -13,7 +13,7 @@ export default class Entity {
 
         this.defaultCharacteristics = {
             ap: 6,
-            mp: 3,
+            mp: 6,
             life: 100000,
             erosion: 10,
             initiative: 0,
