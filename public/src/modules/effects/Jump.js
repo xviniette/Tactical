@@ -3,7 +3,7 @@
 import Effect from "./Effect.js"
 
 export default class Jump extends Effect {
-    constructor(json){
+    constructor(json) {
         super(json);
     }
 
@@ -13,10 +13,14 @@ export default class Jump extends Effect {
         }
     }
 
-    execute() {
+    execute(execute = true) {
         if (this.target == null) {
-            this.source.x = this.x;
-            this.source.y = this.y;
+            if (execute) {
+                this.source.x = this.x;
+                this.source.y = this.y;
+            }
         }
+
+        return { ai: 1 };
     }
 }

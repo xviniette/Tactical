@@ -32,7 +32,7 @@ export default class Spell {
         this.turnCast = 0;
         this.targetCast = 0;
         this.cooldown = 0;
-        this.initialCountdown = 0;
+        this.initialCooldown = 0;
 
         this.incompatibleSpells = [];
 
@@ -40,7 +40,12 @@ export default class Spell {
 
         this.historic = [];
 
+        //AI
+        this.type = Spell.spellType().opponent;
+
         this.init(json);
+
+        this.cooldown = this.initialCooldown;
     }
 
     init(json = {}) {
@@ -49,14 +54,13 @@ export default class Spell {
         }
     }
 
-    isCell(x, y) {
-        var map = this.fight.map.tiles;
-
-        if (map[x] && map[x][y] == 0) {
-            return true;
+    static spellType() {
+        return {
+            "opponent": 0,
+            "ally": 1,
+            "invocation": 2,
+            "movement": 3
         }
-
-        return false;
     }
 
     getComputedMaxRange() {
@@ -70,8 +74,16 @@ export default class Spell {
         return this.computedMaxRange;
     }
 
-    inRange(x, y) {
-        var range = Math.abs(x - this.entity.x) + Math.abs(y - this.entity.y);
+    inRange(x1, y1, x2 = undefined, y2 = undefined) {
+        if (x2 == undefined || y2 == undefined) {
+            x2 = x1;
+            y2 = y1;
+
+            x1 = this.entity.x;
+            y1 = this.entity.y;
+        }
+
+        var range = Math.abs(x2 - x1) + Math.abs(y2 - y1);
         return range >= this.minRange && range <= (this.computedMaxRange || this.maxRange);
     }
 
@@ -89,25 +101,38 @@ export default class Spell {
         return !this.isFree(x, y);
     }
 
-    inLimitation(x, y) {
+    inLimitation(x1, y1, x2 = undefined, y2 = undefined) {
+        if (x2 == undefined || y2 == undefined) {
+            x2 = x1;
+            y2 = y1;
+
+            x1 = this.entity.x;
+            y1 = this.entity.y;
+        }
+
         if (!this.inLine && !this.inDiagonal) {
             return true;
         }
 
-        if (this.inLine && (x == this.entity.x || y == this.entity.y)) {
+        if (this.inLine && (x1 == x2 || y1 == y2)) {
             return true;
         }
 
-        if (this.inDiagonal && (Math.abs(x - this.entity.x) == Math.abs(y - this.entity.y))) {
+        if (this.inDiagonal && (Math.abs(x2 - x1) == Math.abs(y2 - y1))) {
             return true;
         }
 
         return false;
     }
 
-    inLineOfSight(x2, y2) {
-        var x1 = this.entity.x;
-        var y1 = this.entity.y;
+    inLineOfSight(x1, y1, x2 = undefined, y2 = undefined) {
+        if (x2 == undefined || y2 == undefined) {
+            x2 = x1;
+            y2 = y1;
+
+            x1 = this.entity.x;
+            y1 = this.entity.y;
+        }
 
         var pts = [];
 
@@ -186,10 +211,16 @@ export default class Spell {
         return true;
     }
 
-    getAoeTiles(x, y, angle = undefined) {
-        if (angle == undefined) {
-            angle = Math.atan2(y - this.entity.y, x - this.entity.x);
+    getAoeTiles(x1, y1, x2 = undefined, y2 = undefined) {
+        if (x2 == undefined || y2 == undefined) {
+            x2 = x1;
+            y2 = y1;
+
+            x1 = this.entity.x;
+            y1 = this.entity.y;
         }
+
+        var angle = Math.atan2(y2 - y1, x2 - x1);
 
         var centerX = Math.floor((this.aoe.length - 1) / 2);
         var centerY = Math.floor((this.aoe[0].length - 1) / 2);
@@ -207,10 +238,10 @@ export default class Spell {
                 var rotatedI = Math.round(distance * Math.cos(oldAngle + angle));
                 var rotatedJ = Math.round(distance * Math.sin(oldAngle + angle));
 
-                var cx = x + rotatedI;
-                var cy = y + rotatedJ;
+                var cx = x2 + rotatedI;
+                var cy = y2 + rotatedJ;
 
-                if (!this.isCell(cx, cy)) {
+                if (!this.fight.map.isCell(cx, cy)) {
                     continue;
                 }
 
@@ -223,16 +254,17 @@ export default class Spell {
         return tiles;
     }
 
-    getAffectedEntities(x, y) {
+    getAffectedEntities(tiles = [], x = undefined, y = undefined) {
         var entities = this.fight.entities;
-
-        var tiles = this.getAoeTiles(x, y);
-
         var affectedEntities = [];
 
         for (var entity of entities) {
             if (tiles.find((tile) => {
-                return tile.x == entity.x && tile.y == entity.y
+                if (x != undefined && y != undefined && entity.id == this.entity.id) {
+                    return tile.x == x && tile.y == y;
+                } else {
+                    return tile.x == entity.x && tile.y == entity.y;
+                }
             })) {
                 affectedEntities.push(entity);
             }
@@ -261,36 +293,148 @@ export default class Spell {
         return castableCells;
     }
 
-    fastCastCheck(x, y) {
-        if (!this.isCell(x, y)) {
+    //Check
+    canUse(AP = undefined, MP = undefined) {
+        var characteristics = this.entity.getCharacteristics();
+        if (AP == undefined) {
+            AP = characteristics.ap;
+        }
+
+        if (MP == undefined) {
+            MP = characteristics.mp;
+        }
+
+        if (this.apCost > 0 && this.apCost > AP) {
             return false;
         }
 
-        if (!this.inRange(x, y)) {
-            return false;
-        }
-
-        if (!this.inLimitation(x, y)) {
+        if (this.mpCost > 0 && this.mpCost > MP) {
             return false;
         }
 
         return true;
     }
 
-    checkCast(x, y, needFastCheck = true) {
-        if (needFastCheck && !this.fastCastCheck(x, y)) {
+    checkCooldown() {
+        //cooldown
+        if (this.cooldown > 0) {
+            //Initial
+            if (this.cooldown > this.fight.turn) {
+                return false;
+            }
+
+            if (this.historic.find((history) => {
+                return history.turn <= this.fight.turn - this.cooldown;
+            })) {
+                return false;
+            }
+        }
+
+        //turn cast
+        if (this.turnCast > 0) {
+            var turnCasted = this.historic.filter((history) => {
+                return history.turn == this.fight.turn;
+            });
+
+            if (turnCasted.length >= this.turnCast) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    getCooldown() {
+        if (this.cooldown > 0) {
+            //Initial
+            if (this.cooldown > this.turn.fight) {
+                return this.cooldown - this.fight.turn;
+            }
+
+            var lastCast = this.historic.find((history) => {
+                return history.turn <= this.fight.turn - this.cooldown;
+            });
+
+            if (lastCast) {
+                return lastCast.turn + this.cooldown - this.fight.turn;
+            }
+        }
+
+        return 0;
+    }
+
+    checkCooldownCell(x, y) {
+        if (this.targetCast > 0) {
+            var targetCasted = this.historic.filter((history) => {
+                return history.turn == this.fight.turn && history.x == x && history.y == y;
+            });
+
+            if (targetCasted.length >= this.targetCast) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    fastCastCheck(x1, y1, x2 = undefined, y2 = undefined) {
+        if (x2 == undefined || y2 == undefined) {
+            x2 = x1;
+            y2 = y1;
+
+            x1 = this.entity.x;
+            y1 = this.entity.y;
+        }
+
+        if (!this.fight.map.isCell(x2, y2)) {
             return false;
         }
 
-        if (this.freeCell && !this.isFree(x, y)) {
+        if (!this.inRange(x1, y1, x2, y2)) {
             return false;
         }
 
-        if (this.takenCell && !this.isTaken(x, y)) {
+        if (!this.inLimitation(x1, y1, x2, y2)) {
             return false;
         }
 
-        if (this.los && !this.inLineOfSight(x, y)) {
+        return true;
+    }
+
+    checkCast(x1, y1, x2 = undefined, y2 = undefined, needFastCheck = true) {
+        if (x2 == undefined || y2 == undefined) {
+            x2 = x1;
+            y2 = y1;
+
+            x1 = this.entity.x;
+            y1 = this.entity.y;
+        }
+
+        if (!this.canUse()) {
+            return false;
+        }
+
+        if (needFastCheck && !this.fastCastCheck(x1, y1, x2, y2)) {
+            return false;
+        }
+
+        if (!this.checkCooldown()) {
+            return false;
+        }
+
+        if (!this.checkCooldownCell(x2, y2)) {
+            return false;
+        }
+
+        if (this.freeCell && !this.isFree(x2, y2)) {
+            return false;
+        }
+
+        if (this.takenCell && !this.isTaken(x2, y2)) {
+            return false;
+        }
+
+        if (this.los && !this.inLineOfSight(x1, y1, x2, y2)) {
             return false;
         }
 
@@ -298,21 +442,30 @@ export default class Spell {
     }
 
     //use
-    cast(x, y) {
+    cast(x1, y1, x2 = undefined, y2 = undefined, execute = true) {
+        if (x2 == undefined || y2 == undefined) {
+            x2 = x1;
+            y2 = y1;
+
+            x1 = this.entity.x;
+            y1 = this.entity.y;
+        }
+
         this.getComputedMaxRange();
 
-        if (!this.checkCast(x, y)) {
+        if (!this.checkCast(x1, y1, x2, y2)) {
             return false;
         }
 
-        if (this.apCost > this.entity.getCharacteristics().ap) {
-            return false;
+        if (execute) {
+            this.entity.currentCharacteristics.usedAP += this.apCost;
+            this.entity.currentCharacteristics.usedMP += this.mpCost;
         }
 
-        this.entity.currentCharacteristics.usedAP += this.apCost;
+        var aiScore = 0;
 
         //Entities
-        for (var entity of this.getAffectedEntities(x, y)) {
+        for (var entity of this.getAffectedEntities(this.getAoeTiles(x1, y1, x2, y2))) {
             for (var effect of this.effects) {
                 if (Effects[effect.effect]) {
                     var e = new (Effects[effect.effect])(Object.assign({
@@ -320,32 +473,53 @@ export default class Spell {
                         spell: this,
                         source: this.entity,
                         target: entity,
-                        x: x,
-                        y: y,
+                        x: x2,
+                        y: y2,
                         cx: entity.x,
                         cy: entity.y
                     }, effect));
-                    e.cast();
+
+                    if (execute) {
+                        e.cast();
+                    } else {
+                        aiScore += e.ai();
+                    }
                 }
             }
         }
 
         //Tiles
-        for (var tile of this.getAoeTiles(x, y)) {
+        for (var tile of this.getAoeTiles(x1, y1, x2, y2)) {
             for (var effect of this.effects) {
                 if (Effects[effect.effect]) {
                     var e = new (Effects[effect.effect])(Object.assign({
                         fight: this.fight,
                         spell: this,
                         source: this.entity,
-                        x: x,
-                        y: y,
+                        x: x2,
+                        y: y2,
                         cx: tile.x,
                         cy: tile.y
                     }, effect));
-                    e.cast();
+
+                    if (execute) {
+                        e.cast();
+                    } else {
+                        aiScore += e.ai();
+                    }
                 }
             }
         }
+
+        if (execute) {
+            this.historic.push({
+                turn: this.fight.turn,
+                x: x2,
+                y: y2
+            });
+        }
+
+        return aiScore;
     }
+
 }

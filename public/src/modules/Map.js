@@ -28,7 +28,7 @@ export default class Map {
     }
 
     isTile(x, y) {
-        if (this.tiles[x] && map[x][y] != undefined) {
+        if (this.tiles[x] && this.tiles[x][y] != undefined) {
             return true;
         }
 

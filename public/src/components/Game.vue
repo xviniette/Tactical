@@ -62,33 +62,33 @@ export default {
         {
           id: 1,
           name: "Taper",
-          apCost: 0,
-          maxRange: 3,
-          turnCast: 1,
-          effects: [{ effect: "damage" }],
-          aoe: [[0], [1], [1]],
-          inLine: true
-        },
-        {
-          id: 2,
-          name: "Sauter",
-          apCost: 6,
-          minRange: 3,
-          maxRange: 5,
-          turnCast: 1,
-          effects: [{ effect: "jump" }]
-        },
-        {
-          id: 3,
-          name: "Taper Loin",
           apCost: 3,
-          minRange: 4,
-          maxRange: 15,
-          aoe: [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
-          los: false,
-          turnCast: 1,
-          effects: [{ effect: "damage", damage: 10 }]
+          maxRange: 3,
+          minRange: 1,
+          effects: [{ effect: "damage" }],
+          aoe: [[1]],
+          inLine: true
         }
+        // {
+        //   id: 2,
+        //   name: "Sauter",
+        //   apCost: 6,
+        //   minRange: 3,
+        //   maxRange: 5,
+        //   turnCast: 1,
+        //   effects: [{ effect: "jump" }]
+        // },
+        // {
+        //   id: 3,
+        //   name: "Taper Loin",
+        //   apCost: 3,
+        //   minRange: 4,
+        //   maxRange: 15,
+        //   aoe: [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
+        //   los: false,
+        //   turnCast: 1,
+        //   effects: [{ effect: "damage", damage: 10 }]
+        // }
       ],
       mouse: {
         x: 0,
@@ -146,25 +146,19 @@ export default {
     window.f = this.fight;
 
     this.fight.entities = [
-      new Player({
-        name: "Elgringo",
-        x: 6,
-        y: 8,
-        fight: this.fight,
-        team: 1
-      }),
-      new Player({
+      new AI({
         name: "ElBazia",
         x: 7,
         y: 9,
         fight: this.fight,
-        team: 2
+        team: 1
       }),
       new AI({
         name: "AI",
         x: 9,
         y: 9,
-        fight: this.fight
+        fight: this.fight,
+        team: 2
       })
     ];
 

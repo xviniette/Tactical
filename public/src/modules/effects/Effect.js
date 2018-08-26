@@ -35,13 +35,24 @@ export default class Effect {
         return {};
     }
 
-    execute() {
+    execute(execute = true) {
         return false;
     }
 
     cast() {
         if (this.onCast) {
-            this.execute();
+            return this.execute();
         }
+
+        return false;
+    }
+
+    ai() {
+        var res = this.execute(false);
+        if (res) {
+            return res.ai;
+        }
+
+        return false;
     }
 }
