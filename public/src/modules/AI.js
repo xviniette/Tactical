@@ -75,16 +75,37 @@ export default class AI extends Entity {
         }
 
         console.log("FINI ");
+
+        //MOVEMENT LEFT
+        var movementTiles = this.getMovementTiles();
+        var movementScores = [];
+
+        movementTiles.forEach(tile => {
+            var score = 0;
+
+            if (this.aggressive) {
+                this.fight.entities.forEach((entity) => {
+                    score += Math.pow(100 - (Math.abs(entity.x - tile.x) + Math.abs(entity.y - tile.y)), 10) - tile.usedAP - tile.usedMP;
+                });
+            } else {
+
+            }
+
+            movementScores.push({ x: tile.x, y: tile.y, score: score });
+        });
+
+        if (movementScores.length > 0) {
+            console.log("MDR", movementScores);
+            movementScores.sort((a, b) => {
+                return b.score - a.score;
+            });
+
+            this.move(movementScores[0].x, movementScores[0].y);
+        }
+
         return;
         setTimeout(() => {
             this.endTurn();
         }, 1000);
-
-        //MOVEMENT LEFT
-        if (this.aggressive) {
-
-        } else {
-
-        }
     }
 }
