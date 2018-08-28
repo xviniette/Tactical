@@ -1,0 +1,26 @@
+{
+    "image": {
+        "tile0": {
+            "path": "./assets/tile/tile2.png",
+            "anchorX": 225,
+            "anchorY": 110,
+            "width": 450,
+            "height": 392
+            
+        },
+        "hero": {
+            "path": "./assets/npc/hero.png",
+            "anchorX": 90,
+            "anchorY": 225,
+            "width": 178,
+            "height": 244
+        },
+        "obstacle": {
+            "path": "./assets/tile/crate2.png",
+            "anchorX": 83,
+            "anchorY": 150,
+            "width": 167,
+            "height": 185
+        }
+    }
+}
