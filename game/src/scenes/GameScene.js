@@ -51,7 +51,6 @@ class GameScene extends Phaser.Scene {
                 team: 1,
                 defaultCharacteristics: {
                     life: 700,
-                    mp: 8
                 }
             }),
             new AI({
@@ -84,6 +83,7 @@ class GameScene extends Phaser.Scene {
     }
 
     setEndTurnUI() {
+        //
         this.ui.endTurn = this.add.text(500, 550, "END TURN", { color: "#ffff00" }).setInteractive();
 
         this.ui.endTurn.on('pointerdown', () => {
@@ -92,6 +92,10 @@ class GameScene extends Phaser.Scene {
                 entity.endTurn();
             }
         });
+
+        this.ui.spells = this.add.container();
+
+        console.log(this.fight.getEntity(this.me).spells);
     }
 
     setTiles() {

@@ -12,7 +12,7 @@ export default class AI extends Entity {
     }
 
     play() {
-        console.log("xD");
+        console.log("AI");
         //CAST LOOP
         var casted = true;
         while (casted) {
@@ -64,6 +64,8 @@ export default class AI extends Entity {
         //MOVEMENT LEFT
         var movementTiles = this.getMovementTiles();
         var movementScores = [];
+
+        console.log(movementTiles);
 
         movementTiles.forEach(tile => {
             var score = 0;

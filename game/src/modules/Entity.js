@@ -183,25 +183,23 @@ export default class Entity extends Element {
 
                 t.reachable = t.usedMP <= MP;
 
-                if(tile.x == 10 && tile.y == 8){
-                    console.log(t);
-                }
-
                 //exist
                 var existingTile = tiles.findIndex((t) => {
                     return t.x == tile.x && t.y == tile.y;
                 });
 
                 if (existingTile != -1) {
-                    if (tiles[existingTile].usedMP > t.usedMP) {
+                    if (tiles[existingTile].usedMP > t.usedMP && tiles[existingTile].usedAP > t.usedAP) {
                         tiles[existingTile] = t;
 
                         var toProcessIndex = toProcess.findIndex((t) => {
                             return t.x == tile.x && t.y == tile.y;
                         });
 
-                        if(toProcessIndex != -1){
+                        if (toProcessIndex != -1) {
                             toProcess[toProcessIndex] = t;
+                        } else {
+                            toProcess.push(t);
                         }
                     }
                     continue;

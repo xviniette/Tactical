@@ -2,8 +2,8 @@
     {
         "id": 1,
         "name": "Taper",
-        "minRange": 2,
-        "maxRange": 3,
+        "minRange": 1,
+        "maxRange": 1,
         "effects": [
             {
                 "effect": "dommage"
