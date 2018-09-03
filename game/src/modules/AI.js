@@ -11,13 +11,8 @@ export default class AI extends Entity {
         this.init(json);
     }
 
-    init(json = {}) {
-        for (var i in json) {
-            this[i] = json[i];
-        }
-    }
-
     play() {
+        console.log("xD");
         //CAST LOOP
         var casted = true;
         while (casted) {

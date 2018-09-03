@@ -1,24 +1,22 @@
 "use strict";
 
-export default class Fight {
+import Map from "./Map.js";
+import Element from "./Element.js"
+
+export default class Fight extends Element {
     constructor(json) {
-        this.map;
+        super();
+        
+        this.map = new Map({ fight: this });
         this.entities = [];
         this.turn = 0;
         this.currentEntity = null;
         this.timer = null;
         this.turnTime = null;
-        this.seed = Math.round(Math.random() * 4294967296);
 
         this.scene;
 
         this.init(json)
-    }
-
-    init(json = {}) {
-        for (var i in json) {
-            this[i] = json[i];
-        }
     }
 
     start() {
@@ -67,19 +65,13 @@ export default class Fight {
         entity.play();
     }
 
-    random(min = null, max = null) {
-        this.seed = (1664525 * this.seed + 1013904223) % 4294967296;
+    getEntity(id) {
+        return this.entities.find((entity) => {
+            return entity.id == id;
+        });
+    }
 
-        var random = this.seed / 4294967296;
-
-        if (min == null && max == null) {
-            return random;
-        }
-
-        if (max == null) {
-            return Math.floor(random * (min + 1))
-        }
-
-        return Math.floor((max + 1 - min) * random + min);
+    isOver() {
+        return false;
     }
 }

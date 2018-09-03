@@ -1,0 +1,18 @@
+{
+    "players": [
+        {
+            "id": 0,
+            "name": "ElBazia",
+            "team": 1
+        }
+    ],
+    "ias": [
+        {
+            "name": "IA PAS SYMPA",
+            "team": 2
+        }
+    ],
+    "map":{
+        
+    }
+}

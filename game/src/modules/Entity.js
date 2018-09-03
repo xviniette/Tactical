@@ -1,7 +1,10 @@
 "use strict";
+import Element from "./Element.js"
 
-export default class Entity {
+export default class Entity extends Element {
     constructor(json) {
+        super();
+
         this.fight;
 
         this.id = Math.random().toString(36).substr(2, 9);
@@ -14,7 +17,7 @@ export default class Entity {
         this.defaultCharacteristics = {
             ap: 6,
             mp: 6,
-            life: 100000,
+            life: 100,
             erosion: 10,
             initiative: 0,
             power: 0,
@@ -38,14 +41,6 @@ export default class Entity {
         this.effects = [];
 
         this.sprite;
-
-        this.init(json);
-    }
-
-    init(json = {}) {
-        for (var i in json) {
-            this[i] = json[i];
-        }
     }
 
     play() {
@@ -119,7 +114,7 @@ export default class Entity {
 
         if (this.sprite) {
             var scene = this.fight.scene;
-            var movementTime = 500;
+            var movementTime = 200;
             tile.path.forEach((t, index) => {
                 var position = scene.getIsometricPosition(t.x, t.y);
                 scene.tweens.add({
@@ -146,27 +141,17 @@ export default class Entity {
         var getDodgeLoss = (x, y) => {
             var left = 1;
 
-            for (var i = x - 1; i <= x + 1; i++) {
-                for (var j = y - 1; j <= y + 1; j++) {
-                    if (Math.abs(x - i) + Math.abs(y - j) == 1) {
-                        var entity = this.fight.entities.find((e) => {
-                            return e.x == i && e.y == j && e.team != this.team;
-                        });
+            this.fight.map.getEntitiesAround(x, y).filter((e) => { return e.team != this.team }).forEach((e) => {
+                left *= Math.max(0, Math.min(1, (characteristics.dodge + 2) / (2 * (e.getCharacteristics().lock + 2))));
+            });
 
-                        if (entity) {
-                            left *= Math.max(0, Math.min(1, (characteristics.dodge + 2) / (2 * (entity.getCharacteristics().lock + 2))));
-                        }
-                    }
-                }
-            }
             return Math.min(1, Math.max(0, 1 - left));
         }
 
         var processTile = (parentTile) => {
-            for (var a = 0; a < Math.PI * 2; a += Math.PI / 2) {
-                var tile = { x: parentTile.x + Math.round(Math.cos(a)), y: parentTile.y + Math.round(Math.sin(a)) };
-
-                //mp
+            var tilesAround = this.fight.map.getCellsAround(parentTile.x, parentTile.y);
+            for (var tile of tilesAround) {
+                //total mp length
                 if (parentTile.path.length >= MP) {
                     continue;
                 }
@@ -177,32 +162,47 @@ export default class Entity {
                 }
 
                 //map problem
-                if (mapTiles[tile.x] == undefined || mapTiles[tile.x][tile.y] == undefined || mapTiles[tile.x][tile.y] != 0) {
+                if (!this.fight.map.isCell(tile.x, tile.y)) {
                     continue;
                 }
 
-                //Entity on tile
-                if (this.fight.entities.find((e) => {
-                    return e.x == tile.x && e.y == tile.y;
-                })) {
+                // //Entity on tile
+                if (this.fight.map.getCellEntity(tile.x, tile.y)) {
                     continue;
                 }
 
                 //loss
-                var t = { x: tile.x, y: tile.y, path: [...parentTile.path, { x: tile.x, y: tile.y }], usedMP: parentTile.usedMP + Math.round(parentTile.loss * (MP - parentTile.usedMP)), usedAP: parentTile.usedAP + Math.round(parentTile.loss * (AP - parentTile.usedAP)), loss: getDodgeLoss(tile.x, tile.y) };
-                t.reachable = t.usedMP < MP;
-                if (t.reachable) {
-                    t.usedMP += 1;
+                var t = {
+                    x: tile.x,
+                    y: tile.y,
+                    path: [...parentTile.path, { x: tile.x, y: tile.y }],
+                    usedMP: parentTile.usedMP + Math.round(parentTile.loss * (MP - parentTile.usedMP)) + 1,
+                    usedAP: parentTile.usedAP + Math.round(parentTile.loss * (AP - parentTile.usedAP)),
+                    loss: getDodgeLoss(tile.x, tile.y)
+                };
+
+                t.reachable = t.usedMP <= MP;
+
+                if(tile.x == 10 && tile.y == 8){
+                    console.log(t);
                 }
 
                 //exist
                 var existingTile = tiles.findIndex((t) => {
-                    return t.x == tile.x && t.y == tile.y
+                    return t.x == tile.x && t.y == tile.y;
                 });
 
                 if (existingTile != -1) {
                     if (tiles[existingTile].usedMP > t.usedMP) {
                         tiles[existingTile] = t;
+
+                        var toProcessIndex = toProcess.findIndex((t) => {
+                            return t.x == tile.x && t.y == tile.y;
+                        });
+
+                        if(toProcessIndex != -1){
+                            toProcess[toProcessIndex] = t;
+                        }
                     }
                     continue;
                 }
@@ -224,6 +224,7 @@ export default class Entity {
         if (needStartTile) {
             tiles.unshift(startTile);
         }
+
         return tiles;
     }
 

@@ -1,7 +1,11 @@
 "use strict";
 
-export default class Map {
+import Element from "./Element.js"
+
+export default class Map extends Element {
     constructor(json) {
+        super();
+
         this.fight;
         this.tiles = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

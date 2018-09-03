@@ -283,7 +283,7 @@ export default class Spell {
                 if (this.fastCastCheck(x, y)) {
                     var cell = { x: x, y: y };
                     if (this.checkCast(x, y, false)) {
-                        cell.cast = true;
+                        cell.castable = true;
                     }
                     castableCells.push(cell);
                 }

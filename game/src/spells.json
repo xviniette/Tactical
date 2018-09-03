@@ -1,0 +1,13 @@
+[
+    {
+        "id": 1,
+        "name": "Taper",
+        "minRange": 2,
+        "maxRange": 3,
+        "effects": [
+            {
+                "effect": "dommage"
+            }
+        ]
+    }
+]
