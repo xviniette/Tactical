@@ -59,7 +59,7 @@ class GameScene extends Phaser.Scene {
                 y: 9,
                 fight: this.fight,
                 team: 2,
-                defaultCharacteristics: { lock: 800 }
+                defaultCharacteristics: { lock: 0 }
             })
         ];
 
@@ -83,7 +83,6 @@ class GameScene extends Phaser.Scene {
     }
 
     setEndTurnUI() {
-        //
         this.ui.endTurn = this.add.text(500, 550, "END TURN", { color: "#ffff00" }).setInteractive();
 
         this.ui.endTurn.on('pointerdown', () => {
@@ -120,6 +119,8 @@ class GameScene extends Phaser.Scene {
                 if (spell) {
                     tiles = spell.getCastableCells();
 
+                    var aoeTiles = spell.getAoeTiles(this.isoMouse.x, this.isoMouse.y);
+
                     tiles.forEach((tile) => {
                         if (tile.castable) {
                             tile.fillColor = 0x4688f2;
@@ -127,6 +128,15 @@ class GameScene extends Phaser.Scene {
                             tile.fillColor = 0x82adf2;
                         }
                     });
+
+                    if(tiles.find((tile) => {
+                        return tile.castable && tile.x == this.isoMouse.x && tile.y == this.isoMouse.y;
+                    })){
+                        aoeTiles.forEach((tile) => {
+                            tile.fillColor = 0xef9c28;
+                            tiles.push(tile);
+                        });
+                    }
                 }
             }
         } else if (this.selected.entity) {

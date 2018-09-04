@@ -4,6 +4,14 @@
         "name": "Taper",
         "minRange": 1,
         "maxRange": 10,
+        "aoe": [
+            [
+                1,
+                1,
+                1
+            ]
+        ],
+        "inLine": true,
         "effects": [
             {
                 "effect": "dommage"

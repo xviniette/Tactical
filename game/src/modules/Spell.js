@@ -221,6 +221,7 @@ export default class Spell {
         }
 
         var angle = Math.atan2(y2 - y1, x2 - x1);
+        angle = Math.round(angle / (Math.PI/2)) * (Math.PI/2);
 
         var centerX = Math.floor((this.aoe.length - 1) / 2);
         var centerY = Math.floor((this.aoe[0].length - 1) / 2);
@@ -232,11 +233,11 @@ export default class Spell {
                     continue;
                 }
 
-                var distance = Math.sqrt(Math.pow(i - centerX, 2) + Math.pow(j - centerY, 2));
+                var distance = Math.round(Math.sqrt(Math.pow(i - centerX, 2) + Math.pow(j - centerY, 2)));
                 var oldAngle = Math.atan2(j - centerY, i - centerX);
 
-                var rotatedI = Math.round(distance * Math.cos(oldAngle + angle));
-                var rotatedJ = Math.round(distance * Math.sin(oldAngle + angle));
+                var rotatedI = distance * Math.round(Math.cos(oldAngle + angle));
+                var rotatedJ = distance * Math.round(Math.sin(oldAngle + angle));
 
                 var cx = x2 + rotatedI;
                 var cy = y2 + rotatedJ;

@@ -65,13 +65,11 @@ export default class AI extends Entity {
         var movementTiles = this.getMovementTiles();
         var movementScores = [];
 
-        console.log(movementTiles);
-
         movementTiles.forEach(tile => {
             var score = 0;
 
             if (this.aggressive) {
-                this.fight.entities.forEach((entity) => {
+                this.fight.entities.filter((entity) => { return entity.team != this.team }).forEach((entity) => {
                     score += Math.pow(100 - (Math.abs(entity.x - tile.x) + Math.abs(entity.y - tile.y)), 10) - tile.usedAP - tile.usedMP;
                 });
             } else {
