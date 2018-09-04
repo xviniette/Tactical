@@ -95,7 +95,20 @@ class GameScene extends Phaser.Scene {
 
         this.ui.spells = this.add.container();
 
-        console.log(this.fight.getEntity(this.me).spells);
+        this.fight.getEntity(this.me).spells.forEach((spell) => {
+            var s = this.add.text(300, 300, spell.name, { color: "#ffff00" }).setInteractive();
+            s.spellId = spell.id;
+
+            var _this = this;
+
+            s.on("pointerdown", function () {
+                console.log(this);
+                _this.selected.spell = this.spellId;
+                _this.setTiles();
+            });
+
+            this.ui.spells.add(s);
+        });
     }
 
     setTiles() {
@@ -103,7 +116,18 @@ class GameScene extends Phaser.Scene {
         if (this.selected.spell) {
             var entity = this.fight.getEntity(this.me);
             if (entity) {
-                tiles = entity.getCastableCells();
+                var spell = entity.spells.find((s) => { return s.id == this.selected.spell });
+                if (spell) {
+                    tiles = spell.getCastableCells();
+
+                    tiles.forEach((tile) => {
+                        if (tile.castable) {
+                            tile.fillColor = 0x4688f2;
+                        } else {
+                            tile.fillColor = 0x82adf2;
+                        }
+                    });
+                }
             }
         } else if (this.selected.entity) {
 
@@ -187,7 +211,7 @@ class GameScene extends Phaser.Scene {
         if (this.isoMouse.x != isoPosition.x || this.isoMouse.y != isoPosition.y) {
             this.isoMouse = isoPosition;
 
-            // this.setTiles();
+            this.setTiles();
         }
     }
 
