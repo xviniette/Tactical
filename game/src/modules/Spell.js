@@ -1,6 +1,7 @@
 "use strict";
 
 import Effects from "./effects/effects.js"
+import GameEvent from "./GameEvent.js"
 
 export default class Spell {
     constructor(json = {}) {
@@ -221,7 +222,7 @@ export default class Spell {
         }
 
         var angle = Math.atan2(y2 - y1, x2 - x1);
-        angle = Math.round(angle / (Math.PI/2)) * (Math.PI/2);
+        angle = Math.round(angle / (Math.PI / 2)) * (Math.PI / 2);
 
         var centerX = Math.floor((this.aoe.length - 1) / 2);
         var centerY = Math.floor((this.aoe[0].length - 1) / 2);
@@ -459,8 +460,16 @@ export default class Spell {
         }
 
         if (execute) {
+            GameEvent.send({ type: "cast", spell: this.id, entity: this.entity.id, x: x2, y: y2 });
+
             this.entity.currentCharacteristics.usedAP += this.apCost;
             this.entity.currentCharacteristics.usedMP += this.mpCost;
+
+            this.historic.push({
+                turn: this.fight.turn,
+                x: x2,
+                y: y2
+            });
         }
 
         var aiScore = 0;
@@ -510,14 +519,6 @@ export default class Spell {
                     }
                 }
             }
-        }
-
-        if (execute) {
-            this.historic.push({
-                turn: this.fight.turn,
-                x: x2,
-                y: y2
-            });
         }
 
         return aiScore;

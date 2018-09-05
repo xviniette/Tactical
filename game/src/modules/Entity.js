@@ -1,5 +1,7 @@
 "use strict";
+
 import Element from "./Element.js"
+import GameEvent from "./GameEvent.js"
 
 export default class Entity extends Element {
     constructor(json) {
@@ -22,8 +24,10 @@ export default class Entity extends Element {
             initiative: 0,
             power: 0,
             damage: 0,
+            armor: 0,
+            resistance: 0,
             range: 0,
-            dodge: 100,
+            dodge: 0,
             lock: 0
         }
 
@@ -68,6 +72,14 @@ export default class Entity extends Element {
         characteristics.ap -= this.currentCharacteristics.usedAP;
         characteristics.mp -= this.currentCharacteristics.usedMP;
 
+        //characteristics limits
+        characteristics.erosion = Math.min(50, characteristics.erosion);
+        characteristics.power = Math.max(0, characteristics.power);
+        characteristics.damage = Math.max(0, characteristics.damage);
+        characteristics.armor = Math.min(100, characteristics.armor);
+        characteristics.lock = Math.max(0, characteristics.lock);
+        characteristics.dodge = Math.max(0, characteristics.dodge);
+
         this.characteristics = characteristics;
         return characteristics;
     }
@@ -96,7 +108,7 @@ export default class Entity extends Element {
         var moveTiles = this.getMovementTiles();
         var tile = moveTiles.find((t) => {
             return t.x == x && t.y == y;
-        })
+        });
 
         if (!tile) {
             return false;
@@ -112,20 +124,7 @@ export default class Entity extends Element {
         this.x = tile.x;
         this.y = tile.y;
 
-        if (this.sprite) {
-            var scene = this.fight.scene;
-            var movementTime = 200;
-            tile.path.forEach((t, index) => {
-                var position = scene.getIsometricPosition(t.x, t.y);
-                scene.tweens.add({
-                    targets: this.sprite,
-                    x: position.x,
-                    y: position.y,
-                    duration: movementTime,
-                    delay: index * movementTime
-                });
-            });
-        }
+        GameEvent.send({ type: "move", tile: tile, entity: this.id });
 
         return tile;
     }

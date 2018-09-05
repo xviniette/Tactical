@@ -33,9 +33,41 @@ class GameScene extends Phaser.Scene {
         this.setGameRenderer();
 
         this.input.on('pointerdown', () => {
-            console.log(this.isoMouse.x, this.isoMouse.y);
             this.action(this.isoMouse.x, this.isoMouse.y);
         });
+
+        document.addEventListener("GameEvent", (e) => {
+            this.eventHandler(e.detail);
+        });
+    }
+
+    eventHandler(data = {}) {
+        console.log(data);
+
+        switch (data.type) {
+            case "move":
+                var entity = this.fight.getEntity(data.entity);
+
+                data.tile.path.forEach((t, index) => {
+                    var position = this.getIsometricPosition(t.x, t.y);
+                    this.tweens.add({
+                        targets: entity.sprite,
+                        x: position.x,
+                        y: position.y,
+                        duration: 200,
+                        delay: index * 200
+                    });
+                });
+                break;
+
+            case "jump":
+                var entity = this.fight.getEntity(data.entity);
+                var position = this.getIsometricPosition(data.x, data.y);
+                entity.sprite.x = position.x;
+                entity.sprite.y = position.y;
+                break;
+            default:
+        }
     }
 
     setGame() {
@@ -51,6 +83,7 @@ class GameScene extends Phaser.Scene {
                 team: 1,
                 defaultCharacteristics: {
                     life: 700,
+                    power: 100
                 }
             }),
             new AI({
@@ -59,7 +92,9 @@ class GameScene extends Phaser.Scene {
                 y: 9,
                 fight: this.fight,
                 team: 2,
-                defaultCharacteristics: { lock: 0 }
+                defaultCharacteristics: {
+                    lock: 0,
+                }
             })
         ];
 
@@ -94,14 +129,13 @@ class GameScene extends Phaser.Scene {
 
         this.ui.spells = this.add.container();
 
-        this.fight.getEntity(this.me).spells.forEach((spell) => {
-            var s = this.add.text(300, 300, spell.name, { color: "#ffff00" }).setInteractive();
+        this.fight.getEntity(this.me).spells.forEach((spell, index) => {
+            var s = this.add.text(0 + index * 100, 550, spell.name, { color: "#ffff00" }).setInteractive();
             s.spellId = spell.id;
 
             var _this = this;
 
             s.on("pointerdown", function () {
-                console.log(this);
                 _this.selected.spell = this.spellId;
                 _this.setTiles();
             });
@@ -129,9 +163,9 @@ class GameScene extends Phaser.Scene {
                         }
                     });
 
-                    if(tiles.find((tile) => {
+                    if (tiles.find((tile) => {
                         return tile.castable && tile.x == this.isoMouse.x && tile.y == this.isoMouse.y;
-                    })){
+                    })) {
                         aoeTiles.forEach((tile) => {
                             tile.fillColor = 0xef9c28;
                             tiles.push(tile);
@@ -235,7 +269,18 @@ class GameScene extends Phaser.Scene {
             return false;
         }
 
-        entity.move(x, y);
+        if (this.selected.spell) {
+            var spell = entity.spells.find((spell) => {
+                return spell.id == this.selected.spell;
+            });
+            if (spell) {
+                spell.cast(x, y);
+            }
+        } else {
+            entity.move(x, y);
+        }
+
+        this.selected.spell = null;
     }
 
     getAssetData(assetName, type = "image") {

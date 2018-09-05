@@ -3,18 +3,34 @@
         "id": 1,
         "name": "Taper",
         "minRange": 1,
-        "maxRange": 10,
+        "maxRange": 1,
+        "apCost": 3,
         "aoe": [
             [
-                1,
-                1,
                 1
             ]
         ],
-        "inLine": true,
         "effects": [
             {
-                "effect": "dommage"
+                "effect": "damage",
+                "damage": 10
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Jump",
+        "minRange": 1,
+        "maxRange": 4,
+        "apCost": 3,
+        "aoe": [
+            [
+                1
+            ]
+        ],
+        "effects": [
+            {
+                "effect": "jump"
             }
         ]
     }

@@ -1,6 +1,7 @@
 "use strict";
 
 import Effect from "./Effect.js"
+import GameEvent from "../GameEvent.js"
 
 export default class Damage extends Effect {
     constructor(json) {
@@ -15,15 +16,26 @@ export default class Damage extends Effect {
     }
 
     execute(execute = true) {
-        if (this.target) {
-            var damage = this.damage + this.damage * Math.max(this.source.getCharacteristics().power, 0) + Math.max(this.source.getCharacteristics().damage, 0);
+        return Damage.damage(this, execute);
+    }
+
+    static damage(data = {}, execute = true) {
+        if (data.target) {
+            var sourceCharacteristics = data.source.getCharacteristics();
+            var targetCharacteristics = data.target.getCharacteristics();
+
+            var damage = data.damage + data.damage * sourceCharacteristics.power / 100 + sourceCharacteristics.damage;
+            var realDamage = Math.min(Math.floor((damage - targetCharacteristics.resistance) * (100 - targetCharacteristics.armor) / 100), targetCharacteristics.currentLife);
 
             if (execute) {
-                this.target.impactLife(-damage);
-                this.target.getCharacteristics();
+                data.target.currentCharacteristics.damageTaken -= realDamage;
+                data.target.currentCharacteristics.erosionTaken -= Math.floor(damage * targetCharacteristics.erosion / 100);
+                data.target.getCharacteristics();
+
+                GameEvent.send({ type: "characteristic", entity: data.target.id, characteristic: "life", value: realDamage });
             }
 
-            return { ai: damage + 1000 }
+            return { ai: realDamage + 1000 + (realDamage >= targetCharacteristics.currentLife ? 9999999 : 0) }
         }
 
         return false;
