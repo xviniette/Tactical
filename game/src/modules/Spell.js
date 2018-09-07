@@ -460,7 +460,7 @@ export default class Spell {
         }
 
         if (execute) {
-            GameEvent.send({ type: "cast", spell: this.id, entity: this.entity.id, x: x2, y: y2 });
+            GameEvent.send({ type: "cast", spell: this.id, entity: this.entity.id, x: x2, y: y2, sx: x1, sy: y1 });
 
             this.entity.currentCharacteristics.usedAP += this.apCost;
             this.entity.currentCharacteristics.usedMP += this.mpCost;

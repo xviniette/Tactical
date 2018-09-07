@@ -19,10 +19,11 @@
     },
     {
         "id": 2,
-        "name": "Jump",
+        "name": "Attirance",
         "minRange": 1,
-        "maxRange": 4,
+        "maxRange": 10,
         "apCost": 3,
+        "inLine": true,
         "aoe": [
             [
                 1
@@ -30,7 +31,9 @@
         ],
         "effects": [
             {
-                "effect": "jump"
+                "effect": "moved",
+                "push": false,
+                "distance": 10
             }
         ]
     }

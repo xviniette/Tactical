@@ -3,7 +3,7 @@
 import Effect from "./Effect.js"
 import GameEvent from "../GameEvent.js"
 
-export default class Damage extends Effect {
+export default class Heal extends Effect {
     constructor(json) {
         super(json);
     }
@@ -16,10 +16,10 @@ export default class Damage extends Effect {
     }
 
     execute(execute = true) {
-        return Damage.damage(this, execute);
+        return Heal.heal(this, execute);
     }
 
-    static damage(data = {}, execute = true) {
+    static heal(data = {}, execute = true) {
         if (data.target) {
             var sourceCharacteristics = data.source.getCharacteristics();
             var targetCharacteristics = data.target.getCharacteristics();
@@ -39,12 +39,6 @@ export default class Damage extends Effect {
         }
 
         return false;
-    }
-
-    static description(data = {}) {
-        var d = Object.assign(Damage.defaultData(), data);
-
-        return `${d.damage} Damage`
     }
 
 

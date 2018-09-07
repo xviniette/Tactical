@@ -28,6 +28,7 @@ export default class AI extends Entity {
                     continue;
                 }
 
+
                 for (var movementTile of movementTiles) {
                     if (!spell.canUse(characteristics.ap - movementTile.usedAP, characteristics.mp - movementTile.usedMP)) {
                         continue;

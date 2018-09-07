@@ -60,11 +60,87 @@ class GameScene extends Phaser.Scene {
                 });
                 break;
 
+            case "moved":
+                var entity = this.fight.getEntity(data.entity);
+
+                var position = this.getIsometricPosition(data.x, data.y);
+                this.tweens.add({
+                    targets: entity.sprite,
+                    x: position.x,
+                    y: position.y,
+                    duration: 200,
+                });
+                break;
+
+            case "cast":
+                var entity = this.fight.getEntity(data.entity);
+                var spell = entity.spells.find((s) => {
+                    return s.id == data.spell;
+                });
+
+                var position = this.getIsometricPosition(data.x, data.y);
+
+                var text = this.add.text(position.x, position.y - 80, spell.name, { fontSize: "20px" });
+                text.setOrigin(0.5, 0.5);
+
+                this.tweens.add({
+                    targets: text,
+                    props: {
+                        y: { value: '+=30', duration: 3000 },
+                        alpha: { value: 0, duration: 3000 },
+                    },
+                    onComplete() {
+                        text.destroy();
+                    }
+                });
+
+                var tiles = spell.getAoeTiles(data.sx, data.sy, data.x, data.y);
+
+                tiles.forEach((tile) => {
+                    var position = this.getIsometricPosition(tile.x, tile.y);
+                    var graphics = this.add.graphics();
+
+                    graphics.lineStyle(2, 0x0000000, 1);
+                    graphics.fillStyle(0xea1e1e);
+                    graphics.setAlpha(0.5);
+
+                    graphics.beginPath();
+
+                    graphics.moveTo(this.tilesize.x / 2, 0);
+                    graphics.lineTo(0, this.tilesize.y / 2);
+                    graphics.lineTo(-this.tilesize.x / 2, 0);
+                    graphics.lineTo(0, -this.tilesize.y / 2);
+
+                    graphics.closePath();
+                    graphics.strokePath();
+                    graphics.fillPath();
+
+                    graphics.x = position.x;
+                    graphics.y = position.y;
+
+                    this.tweens.add({
+                        targets: graphics,
+                        props: {
+                            alpha: { value: 0, duration: 3000, ease: 'Sine.easeOut' },
+                        },
+                        onComplete() {
+                            graphics.destroy();
+                        }
+                    });
+                });
+
+                break;
+
             case "jump":
                 var entity = this.fight.getEntity(data.entity);
                 var position = this.getIsometricPosition(data.x, data.y);
-                entity.sprite.x = position.x;
-                entity.sprite.y = position.y;
+                this.tweens.add({
+                    targets: entity.sprite,
+                    x: position.x,
+                    y: position.y,
+                    ease: 'Expo.easeInOut',
+                    duration: 100,
+                });
                 break;
             default:
         }
@@ -281,6 +357,7 @@ class GameScene extends Phaser.Scene {
         }
 
         this.selected.spell = null;
+        this.setTiles();
     }
 
     getAssetData(assetName, type = "image") {
