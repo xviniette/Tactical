@@ -3,24 +3,27 @@
 import Effect from "./Effect.js"
 import GameEvent from "../GameEvent.js"
 
-export default class Heal extends Effect {
+export default class Buff extends Effect {
     constructor(json) {
         super(json);
     }
 
     static defaultData() {
         return {
-            heal: 1,
+            characteristic: null,
+            value: 0,
+            duration: 0,
             onCast: true
         }
     }
 
     execute(execute = true) {
-        return Heal.heal(this, execute);
+        return Buff.buff(this, execute);
     }
 
-    static heal(data = {}, execute = true) {
+    static buff(data = {}, execute = true) {
         if (data.target) {
+            data.target.push();
             var sourceCharacteristics = data.source.getCharacteristics();
             var targetCharacteristics = data.target.getCharacteristics();
 

@@ -1,6 +1,5 @@
 [
     {
-        "id": 1,
         "name": "Taper",
         "minRange": 1,
         "maxRange": 1,
@@ -18,7 +17,6 @@
         ]
     },
     {
-        "id": 2,
         "name": "Attirance",
         "minRange": 1,
         "maxRange": 10,
@@ -34,6 +32,25 @@
                 "effect": "moved",
                 "push": false,
                 "distance": 10
+            }
+        ]
+    },
+    {
+        "name": "Heal",
+        "minRange": 0,
+        "maxRange": 1,
+        "apCost": 3,
+        "aoe": [
+            [
+                1
+            ]
+        ],
+        "effects": [
+            {
+                "effect": "buff",
+                "duration": 5,
+                "characteristic": "power",
+                "value": 1000
             }
         ]
     }

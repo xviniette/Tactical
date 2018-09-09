@@ -8,7 +8,7 @@ export default class Spell {
         this.fight;
         this.entity;
 
-        this.id;
+        this.id = Math.random().toString(36).substr(2, 9);
         this.name;
         this.description;
 

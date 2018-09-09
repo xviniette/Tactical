@@ -24,6 +24,8 @@ export default class Entity extends Element {
             initiative: 0,
             power: 0,
             damage: 0,
+            healPower: 0,
+            heal: 0,
             armor: 0,
             resistance: 0,
             range: 0,
@@ -64,21 +66,21 @@ export default class Entity extends Element {
             }
         }
 
-        //Current characteristics
-        characteristics.life < 1 ? 1 : characteristics.life;
-        characteristics.maxLife = Math.max(1, characteristics.life - this.currentCharacteristics.erosionTaken);
-        characteristics.currentLife = Math.min(characteristics.life - this.currentCharacteristics.damageTaken, characteristics.maxLife);
-
-        characteristics.ap -= this.currentCharacteristics.usedAP;
-        characteristics.mp -= this.currentCharacteristics.usedMP;
-
         //characteristics limits
+        characteristics.life = Math.max(1, characteristics.life);
         characteristics.erosion = Math.min(50, characteristics.erosion);
         characteristics.power = Math.max(0, characteristics.power);
         characteristics.damage = Math.max(0, characteristics.damage);
         characteristics.armor = Math.min(100, characteristics.armor);
         characteristics.lock = Math.max(0, characteristics.lock);
         characteristics.dodge = Math.max(0, characteristics.dodge);
+
+        //Current characteristics
+        characteristics.maxLife = Math.max(1, characteristics.life - this.currentCharacteristics.erosionTaken);
+        characteristics.currentLife = Math.min(characteristics.life - this.currentCharacteristics.damageTaken, characteristics.maxLife);
+
+        characteristics.ap -= this.currentCharacteristics.usedAP;
+        characteristics.mp -= this.currentCharacteristics.usedMP;
 
         this.characteristics = characteristics;
         return characteristics;

@@ -28,11 +28,11 @@ export default class Damage extends Effect {
             var realDamage = Math.min(Math.floor((damage - targetCharacteristics.resistance) * (100 - targetCharacteristics.armor) / 100), targetCharacteristics.currentLife);
 
             if (execute) {
-                data.target.currentCharacteristics.damageTaken -= realDamage;
-                data.target.currentCharacteristics.erosionTaken -= Math.floor(damage * targetCharacteristics.erosion / 100);
+                data.target.currentCharacteristics.damageTaken += realDamage;
+                data.target.currentCharacteristics.erosionTaken += Math.floor(damage * targetCharacteristics.erosion / 100);
                 data.target.getCharacteristics();
 
-                GameEvent.send({ type: "characteristic", entity: data.target.id, characteristic: "life", value: realDamage });
+                GameEvent.send({ type: "characteristic", entity: data.target.id, characteristic: "hp", value: realDamage });
             }
 
             return { ai: realDamage + 1000 + (realDamage >= targetCharacteristics.currentLife ? 9999999 : 0) }

@@ -2,6 +2,8 @@
 
 export default class Effect {
     constructor(json = {}) {
+        this.id = Math.random().toString(36).substr(2, 9);
+
         this.fight;
         this.source;
         this.target;
@@ -11,8 +13,7 @@ export default class Effect {
         this.cx;
         this.cy;
 
-        this.characteristic;
-        this.value = 0;
+        this.duration = 0;
 
         //Events
         this.onCast = false;
@@ -23,6 +24,12 @@ export default class Effect {
         }
 
         this.init(json);
+
+        if (this.duration > 0) {
+            if (this.target) {
+                this.target.effects.push(this);
+            }
+        }
     }
 
     init(json = {}) {
