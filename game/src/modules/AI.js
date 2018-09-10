@@ -74,7 +74,10 @@ export default class AI extends Entity {
                     score += Math.pow(100 - (Math.abs(entity.x - tile.x) + Math.abs(entity.y - tile.y)), 3) - tile.usedAP - tile.usedMP;
                 });
             } else {
-
+                score += Math.pow(Math.abs(entity.x - tile.x) + Math.abs(entity.y - tile.y), 3);
+                if(!this.fight.map.inLineOfSight(tile.x, tile.y, entity.x, entity.y)){
+                    score += 100;
+                }
             }
 
             movementScores.push({ x: tile.x, y: tile.y, score: score });
@@ -88,8 +91,6 @@ export default class AI extends Entity {
             this.move(movementScores[0].x, movementScores[0].y);
         }
 
-        setTimeout(() => {
-            this.endTurn();
-        }, 2000);
+        this.endTurn();
     }
 }

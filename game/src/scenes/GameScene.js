@@ -207,12 +207,12 @@ class GameScene extends Phaser.Scene {
 
     setGameRenderer() {
         this.setWorld();
-        this.setEndTurnUI();
+        this.setUI();
 
         this.setTiles();
     }
 
-    setEndTurnUI() {
+    setUI() {
         this.ui.endTurn = this.add.text(500, 550, "END TURN", {
             color: "#ffff00"
         }).setInteractive();

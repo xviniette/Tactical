@@ -35,7 +35,7 @@ export default class Damage extends Effect {
                 GameEvent.send({ type: "characteristic", entity: data.target.id, characteristic: "hp", value: realDamage });
             }
 
-            return { ai: realDamage + 1000 + (realDamage >= targetCharacteristics.currentLife ? 9999999 : 0) }
+            return { ai: data.target.team != data.source.team ? 1 : - 1 * realDamage + (realDamage >= targetCharacteristics.currentLife ? 9999999 : 0) }
         }
 
         return false;

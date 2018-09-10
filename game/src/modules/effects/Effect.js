@@ -18,6 +18,10 @@ export default class Effect {
 
         //Events
         this.onCast = false;
+        this.onTargetStart = false;
+        this.onTargetEnd = false;
+        this.onSourceStart = false;
+        this.onSourceEnd = false;
 
         var defaultData = this.constructor.defaultData();
         for (var attr in defaultData) {
@@ -59,6 +63,30 @@ export default class Effect {
 
     targetStart() {
         if (this.onTargetStart) {
+            return this.execute();
+        }
+
+        return false;
+    }
+
+    targetEnd() {
+        if (this.onTargetEnd) {
+            return this.execute();
+        }
+
+        return false;
+    }
+
+    sourceStart() {
+        if (this.onSourceStart) {
+            return this.execute();
+        }
+
+        return false;
+    }
+
+    sourceEnd() {
+        if (this.onSourceEnd) {
             return this.execute();
         }
 

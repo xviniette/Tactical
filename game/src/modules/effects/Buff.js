@@ -25,7 +25,7 @@ export default class Buff extends Effect {
     execute(execute = true) {
         if (this.target) {
             if (!execute) {
-                return;
+                return false;
             }
 
             if (!this.added && this.duration > 0) {
@@ -47,6 +47,8 @@ export default class Buff extends Effect {
                 }
             }
         }
+
+        return false;
     }
 
     remove() {

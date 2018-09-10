@@ -216,12 +216,45 @@ export default class Entity extends Element {
         return tiles;
     }
 
+    alive(){
+        var characteristics = this.getCharacteristics();
+        return characteristics.currentLife > 0;
+    }
+
     myTurn() {
         return this.id == this.fight.currentEntity.id;
     }
 
+    startTurn(){
+        this.fight.effects.filter((e) => {
+            return e.target.id == this.id
+        }).forEach((e) => {
+            e.targetStart();
+        });
+
+        this.fight.effects.filter((e) => {
+            return e.source.id == this.id
+        }).forEach((e) => {
+            e.sourceStart();
+        });
+
+        this.play();
+    }
+
     endTurn() {
         if (this.myTurn()) {
+            this.fight.effects.filter((e) => {
+                return e.target.id == this.id
+            }).forEach((e) => {
+                e.targetEnd();
+            });
+
+            this.fight.effects.filter((e) => {
+                return e.source.id == this.id
+            }).forEach((e) => {
+                e.sourceEnd();
+            });
+
             this.currentCharacteristics.usedAP = 0;
             this.currentCharacteristics.usedMP = 0;
             this.getCharacteristics();

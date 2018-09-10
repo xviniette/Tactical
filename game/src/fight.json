@@ -50,7 +50,7 @@
                     "effect": "buff",
                     "characteristic": "power",
                     "value": 50,
-                    "duration":999999
+                    "duration": 999999
                 }]
             }
         ]
@@ -59,15 +59,29 @@
         "name": "IA PAS SYMPA",
         "team": 2,
         "x": 3,
-        "y": 2,
-        "spells": []
+        "y": 3,
+        "spells": [{
+            "name": "Taper",
+            "minRange": 1,
+            "maxRange": 1,
+            "apCost": 3,
+            "aoe": [
+                [
+                    1
+                ]
+            ],
+            "effects": [{
+                "effect": "damage",
+                "damage": 10
+            }]
+        }]
     }],
     "map": {
         "tiles": [
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],

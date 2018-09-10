@@ -66,12 +66,7 @@ export default class Fight extends Element {
             }, this.turnTime);
         }
 
-        this.effects.filter((e) => {
-            return e.target.id == entity.id
-        }).forEach((e) => {
-            e.targetStart();
-        });
-        entity.play();
+        entity.startTurn();
     }
 
     getEntity(id) {
@@ -81,6 +76,22 @@ export default class Fight extends Element {
     }
 
     isOver() {
-        return false;
+        var aliveTeams = [];
+
+        this.entities.forEach((entity) => {
+            if (entity.team && entity.alive) {
+                if (!aliveTeams.includes(entity.team)) {
+                    aliveTeams.push(entity.team);
+                }
+            }
+        });
+
+        if (aliveTeams.length > 1) {
+            return false;
+        }
+
+        return {
+            winningTeam: aliveTeams.length == 1 ? aliveTeams[0] : null
+        };
     }
 }
