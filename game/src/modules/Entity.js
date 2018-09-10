@@ -14,6 +14,8 @@ export default class Entity extends Element {
         this.x = 0;
         this.y = 0;
 
+        this.alive = true;
+
         this.team;
 
         this.defaultCharacteristics = {
@@ -72,6 +74,11 @@ export default class Entity extends Element {
         characteristics.mp -= this.currentCharacteristics.usedMP;
 
         this.characteristics = characteristics;
+
+        if(this.alive && this.characteristics.currentLife <= 0){
+            this.alive = false;
+            this.die();
+        }
         return characteristics;
     }
 
@@ -115,7 +122,11 @@ export default class Entity extends Element {
         this.x = tile.x;
         this.y = tile.y;
 
-        GameEvent.send({ type: "move", tile: tile, entity: this.id });
+        GameEvent.send({
+            type: "move",
+            tile: tile,
+            entity: this.id
+        });
 
         return tile;
     }
@@ -131,7 +142,9 @@ export default class Entity extends Element {
         var getDodgeLoss = (x, y) => {
             var left = 1;
 
-            this.fight.map.getEntitiesAround(x, y).filter((e) => { return e.team != this.team }).forEach((e) => {
+            this.fight.map.getEntitiesAround(x, y).filter((e) => {
+                return e.team != this.team
+            }).forEach((e) => {
                 left *= Math.max(0, Math.min(1, (characteristics.dodge + 2) / (2 * (e.getCharacteristics().lock + 2))));
             });
 
@@ -165,7 +178,10 @@ export default class Entity extends Element {
                 var t = {
                     x: tile.x,
                     y: tile.y,
-                    path: [...parentTile.path, { x: tile.x, y: tile.y }],
+                    path: [...parentTile.path, {
+                        x: tile.x,
+                        y: tile.y
+                    }],
                     usedMP: parentTile.usedMP + Math.round(parentTile.loss * (MP - parentTile.usedMP)) + 1,
                     usedAP: parentTile.usedAP + Math.round(parentTile.loss * (AP - parentTile.usedAP)),
                     loss: getDodgeLoss(tile.x, tile.y)
@@ -200,7 +216,14 @@ export default class Entity extends Element {
             }
         }
 
-        var startTile = { x: this.x, y: this.y, path: [], usedMP: 0, usedAP: 0, loss: getDodgeLoss(this.x, this.y) };
+        var startTile = {
+            x: this.x,
+            y: this.y,
+            path: [],
+            usedMP: 0,
+            usedAP: 0,
+            loss: getDodgeLoss(this.x, this.y)
+        };
 
         processTile(startTile);
         while (toProcess.length > 0) {
@@ -216,16 +239,17 @@ export default class Entity extends Element {
         return tiles;
     }
 
-    alive(){
-        var characteristics = this.getCharacteristics();
-        return characteristics.currentLife > 0;
+    die() {
+        if (this.fight.isOver()) {
+            this.fight.end();
+        }
     }
 
     myTurn() {
         return this.id == this.fight.currentEntity.id;
     }
 
-    startTurn(){
+    startTurn() {
         this.fight.effects.filter((e) => {
             return e.target.id == this.id
         }).forEach((e) => {

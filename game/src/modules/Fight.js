@@ -94,4 +94,8 @@ export default class Fight extends Element {
             winningTeam: aliveTeams.length == 1 ? aliveTeams[0] : null
         };
     }
+
+    end(){
+        console.log("FIN");
+    }
 }
