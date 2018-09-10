@@ -63,7 +63,7 @@ export default class AI extends Entity {
         }
 
         //MOVEMENT LEFT
-        var movementTiles = this.getMovementTiles();
+        var movementTiles = this.getMovementTiles(true);
         var movementScores = [];
 
         movementTiles.forEach(tile => {
@@ -71,7 +71,7 @@ export default class AI extends Entity {
 
             if (this.aggressive) {
                 this.fight.entities.filter((entity) => { return entity.team != this.team }).forEach((entity) => {
-                    score += Math.pow(100 - (Math.abs(entity.x - tile.x) + Math.abs(entity.y - tile.y)), 10) - tile.usedAP - tile.usedMP;
+                    score += Math.pow(100 - (Math.abs(entity.x - tile.x) + Math.abs(entity.y - tile.y)), 3) - tile.usedAP - tile.usedMP;
                 });
             } else {
 

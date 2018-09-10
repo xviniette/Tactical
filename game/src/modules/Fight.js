@@ -6,13 +6,17 @@ import Element from "./Element.js"
 export default class Fight extends Element {
     constructor(json) {
         super();
-        
-        this.map = new Map({ fight: this });
+
+        this.map = new Map({
+            fight: this
+        });
         this.entities = [];
         this.turn = 0;
         this.currentEntity = null;
         this.timer = null;
         this.turnTime = null;
+
+        this.effects = [];
 
         this.scene;
 
@@ -62,6 +66,11 @@ export default class Fight extends Element {
             }, this.turnTime);
         }
 
+        this.effects.filter((e) => {
+            return e.target.id == entity.id
+        }).forEach((e) => {
+            e.targetStart();
+        });
         entity.play();
     }
 

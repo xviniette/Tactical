@@ -1,5 +1,4 @@
-[
-    {
+[{
         "name": "Taper",
         "minRange": 1,
         "maxRange": 1,
@@ -9,12 +8,10 @@
                 1
             ]
         ],
-        "effects": [
-            {
-                "effect": "damage",
-                "damage": 10
-            }
-        ]
+        "effects": [{
+            "effect": "damage",
+            "damage": 10
+        }]
     },
     {
         "name": "Attirance",
@@ -27,13 +24,11 @@
                 1
             ]
         ],
-        "effects": [
-            {
-                "effect": "moved",
-                "push": false,
-                "distance": 10
-            }
-        ]
+        "effects": [{
+            "effect": "moved",
+            "push": false,
+            "distance": 10
+        }]
     },
     {
         "name": "Heal",
@@ -45,13 +40,11 @@
                 1
             ]
         ],
-        "effects": [
-            {
-                "effect": "buff",
-                "duration": 5,
-                "characteristic": "power",
-                "value": 1000
-            }
-        ]
+        "effects": [{
+            "effect": "buff",
+            "duration": 2,
+            "characteristic": "power",
+            "value": 1000
+        }]
     }
 ]

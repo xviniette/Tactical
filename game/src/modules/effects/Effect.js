@@ -14,6 +14,7 @@ export default class Effect {
         this.cy;
 
         this.duration = 0;
+        this.delay = 0;
 
         //Events
         this.onCast = false;
@@ -24,12 +25,6 @@ export default class Effect {
         }
 
         this.init(json);
-
-        if (this.duration > 0) {
-            if (this.target) {
-                this.target.effects.push(this);
-            }
-        }
     }
 
     init(json = {}) {
@@ -54,6 +49,22 @@ export default class Effect {
         return false;
     }
 
+    remove() {
+        if (this.onRemove) {
+            return this.execute();
+        }
+
+        return false;
+    }
+
+    targetStart() {
+        if (this.onTargetStart) {
+            return this.execute();
+        }
+
+        return false;
+    }
+
     ai() {
         var res = this.execute(false);
         if (res) {
@@ -61,5 +72,29 @@ export default class Effect {
         }
 
         return false;
+    }
+
+    removeEffect() {
+        var index = this.fight.effects.findIndex((e) => {
+            return e.id == this.id;
+        });
+
+        this.fight.effects.splice(index, 1);
+        this.remove();
+    }
+
+    manageDuration() {
+        if (this.delay > 0) {
+            this.delay--;
+            return false;
+        }
+
+        if (this.duration <= 0) {
+            this.removeEffect();
+            return false;
+        }
+
+        this.duration--;
+        return true;
     }
 }

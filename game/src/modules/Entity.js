@@ -44,7 +44,6 @@ export default class Entity extends Element {
 
         this.spells = [];
         this.items = [];
-        this.effects = [];
 
         this.sprite;
     }
@@ -56,7 +55,7 @@ export default class Entity extends Element {
     getCharacteristics() {
         var characteristics = JSON.parse(JSON.stringify(this.defaultCharacteristics));
 
-        for (var effect of this.effects) {
+        for (var effect of this.fight.effects.filter((e) => {return e.target && e.target.id == this.id})) {
             if (effect.characteristic) {
                 if (characteristics[effect.characteristic]) {
                     characteristics[effect.characteristic] += effect.value;
@@ -242,20 +241,4 @@ export default class Entity extends Element {
 
         return false;
     }
-
-    impactLife(delta) {
-        var characteristics = this.getCharacteristics();
-        var value;
-        if (delta <= 0) {
-            value = -Math.min(Math.abs(delta), characteristics.currentLife);
-            this.currentCharacteristics.damageTaken -= value;
-            this.currentCharacteristics.erosionTaken -= Math.floor(value * Math.min(50, characteristics.erosion) / 100);
-        } else {
-            value = Math.min(Math.abs(delta), characteristics.maxLife - characteristics.currentLife);
-            this.currentCharacteristics.damageTaken -= value;
-        }
-
-        return value;
-    }
-
 }

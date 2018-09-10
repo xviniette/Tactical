@@ -180,10 +180,9 @@ export default class Map extends Element {
             }
         }
 
-        //ON BOOLEEN
         for (var i = 0; i < pts.length - 1; i++) {
             var pt = pts[i];
-            if (this.tiles[pt.x] != undefined && this.file[pt.x][pt.y] != undefined && this.tiles[pt.x][pt.y] == 1) {
+            if (this.tiles[pt.x] != undefined && this.tiles[pt.x][pt.y] != undefined && this.tiles[pt.x][pt.y] == 1) {
                 return false;
             }
 
