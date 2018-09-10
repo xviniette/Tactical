@@ -1,18 +1,77 @@
 {
-    "players": [
-        {
-            "id": 0,
-            "name": "ElBazia",
-            "team": 1
-        }
-    ],
-    "ias": [
-        {
-            "name": "IA PAS SYMPA",
-            "team": 2
-        }
-    ],
-    "map":{
-        
+    "players": [{
+        "id": 0,
+        "name": "Vincent",
+        "team": 1,
+        "x": 4,
+        "y": 4,
+        "spells": [{
+                "name": "Taper",
+                "minRange": 1,
+                "maxRange": 1,
+                "apCost": 3,
+                "aoe": [
+                    [
+                        1
+                    ]
+                ],
+                "effects": [{
+                    "effect": "damage",
+                    "damage": 10
+                }]
+            }, {
+                "name": "Sauter",
+                "minRange": 1,
+                "maxRange": 5,
+                "los": false,
+                "apCost": 3,
+                "aoe": [
+                    [
+                        1
+                    ]
+                ],
+                "effects": [{
+                    "effect": "jump"
+                }]
+            },
+            {
+                "name": "Buff",
+                "minRange": 1,
+                "maxRange": 5,
+                "los": false,
+                "apCost": 3,
+                "aoe": [
+                    [0, 1, 0],
+                    [1, 1, 1],
+                    [0, 1, 0]
+
+                ],
+                "effects": [{
+                    "effect": "buff",
+                    "characteristic": "power",
+                    "value": 50,
+                    "duration":999999
+                }]
+            }
+        ]
+    }],
+    "ais": [{
+        "name": "IA PAS SYMPA",
+        "team": 2,
+        "x": 3,
+        "y": 2,
+        "spells": []
+    }],
+    "map": {
+        "tiles": [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        ]
     }
 }

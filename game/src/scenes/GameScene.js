@@ -5,16 +5,28 @@ import AI from "../modules/AI.js";
 import Spell from "../modules/Spell.js";
 
 import assetFiles from "../assets.json";
+import jsonFight from "../fight.json";
 import spells from "../spells.json";
 
 class GameScene extends Phaser.Scene {
     constructor(config) {
-        super({ key: 'GameScene' });
+        super({
+            key: 'GameScene'
+        });
 
-        this.tilesize = { x: 80, y: 40 };
-        this.offset = { x: 400, y: 100 };
+        this.tilesize = {
+            x: 80,
+            y: 40
+        };
+        this.offset = {
+            x: 400,
+            y: 100
+        };
         this.scaleValue = 1;
-        this.isoMouse = { x: 0, y: 0 };
+        this.isoMouse = {
+            x: 0,
+            y: 0
+        };
 
         this.world;
         this.tiles;
@@ -80,14 +92,22 @@ class GameScene extends Phaser.Scene {
 
                 var position = this.getIsometricPosition(data.x, data.y);
 
-                var text = this.add.text(position.x, position.y - 80, spell.name, { fontSize: "20px" });
+                var text = this.add.text(position.x, position.y - 80, spell.name, {
+                    fontSize: "20px"
+                });
                 text.setOrigin(0.5, 0.5);
 
                 this.tweens.add({
                     targets: text,
                     props: {
-                        y: { value: '+=30', duration: 3000 },
-                        alpha: { value: 0, duration: 3000 },
+                        y: {
+                            value: '+=30',
+                            duration: 3000
+                        },
+                        alpha: {
+                            value: 0,
+                            duration: 3000
+                        },
                     },
                     onComplete() {
                         text.destroy();
@@ -121,7 +141,11 @@ class GameScene extends Phaser.Scene {
                     this.tweens.add({
                         targets: graphics,
                         props: {
-                            alpha: { value: 0, duration: 3000, ease: 'Sine.easeOut' },
+                            alpha: {
+                                value: 0,
+                                duration: 3000,
+                                ease: 'Sine.easeOut'
+                            },
                         },
                         onComplete() {
                             graphics.destroy();
@@ -147,40 +171,35 @@ class GameScene extends Phaser.Scene {
     }
 
     setGame() {
-        this.fight = new Fight({ scene: this });
-        this.fight.map = new Map({ fight: this.fight });
-        this.fight.entities = [
-            new Player({
-                id: 0,
-                name: "ElBazia",
-                x: 7,
-                y: 9,
-                fight: this.fight,
-                team: 1,
-                defaultCharacteristics: {
-                    life: 700,
-                    power: 100
-                }
-            }),
-            new AI({
-                name: "AI",
-                x: 9,
-                y: 9,
-                fight: this.fight,
-                team: 2,
-                defaultCharacteristics: {
-                    lock: 0,
-                }
-            })
-        ];
-
-        for (var entity of this.fight.entities) {
-            for (var spell of spells) {
+        this.fight = new Fight({
+            scene: this
+        });
+        this.fight.map = new Map(Object.assign(jsonFight.map, {
+            fight: this.fight
+        }));
+        
+        for (var entity of jsonFight.players) {
+            var e = new Player(Object.assign(entity, {fight: this.fight}));
+            e.spells = [];
+            for(var spell of entity.spells){
                 var s = new Spell(spell);
-                s.entity = entity;
                 s.fight = this.fight;
-                entity.spells.push(s);
+                s.entity = e;
+                e.spells.push(s);
             }
+            this.fight.entities.push(e);
+        }
+
+        for (var entity of jsonFight.ais) {
+            var e = new AI(Object.assign(entity, {fight: this.fight}));
+            e.spells = [];
+            for(var spell of entity.spells){
+                var s = new Spell(spell);
+                s.fight = this.fight;
+                s.entity = e;
+                e.spells.push(s);
+            }
+            this.fight.entities.push(e);
         }
 
         this.fight.start();
@@ -194,7 +213,9 @@ class GameScene extends Phaser.Scene {
     }
 
     setEndTurnUI() {
-        this.ui.endTurn = this.add.text(500, 550, "END TURN", { color: "#ffff00" }).setInteractive();
+        this.ui.endTurn = this.add.text(500, 550, "END TURN", {
+            color: "#ffff00"
+        }).setInteractive();
 
         this.ui.endTurn.on('pointerdown', () => {
             var entity = this.fight.getEntity(this.me);
@@ -206,7 +227,9 @@ class GameScene extends Phaser.Scene {
         this.ui.spells = this.add.container();
 
         this.fight.getEntity(this.me).spells.forEach((spell, index) => {
-            var s = this.add.text(0 + index * 100, 550, spell.name, { color: "#ffff00" }).setInteractive();
+            var s = this.add.text(0 + index * 100, 550, spell.name, {
+                color: "#ffff00"
+            }).setInteractive();
             s.spellId = spell.id;
 
             var _this = this;
@@ -225,7 +248,9 @@ class GameScene extends Phaser.Scene {
         if (this.selected.spell) {
             var entity = this.fight.getEntity(this.me);
             if (entity) {
-                var spell = entity.spells.find((s) => { return s.id == this.selected.spell });
+                var spell = entity.spells.find((s) => {
+                    return s.id == this.selected.spell
+                });
                 if (spell) {
                     tiles = spell.getCastableCells();
 
@@ -240,8 +265,8 @@ class GameScene extends Phaser.Scene {
                     });
 
                     if (tiles.find((tile) => {
-                        return tile.castable && tile.x == this.isoMouse.x && tile.y == this.isoMouse.y;
-                    })) {
+                            return tile.castable && tile.x == this.isoMouse.x && tile.y == this.isoMouse.y;
+                        })) {
                         aoeTiles.forEach((tile) => {
                             tile.fillColor = 0xef9c28;
                             tiles.push(tile);

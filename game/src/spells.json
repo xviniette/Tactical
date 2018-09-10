@@ -46,5 +46,19 @@
             "characteristic": "power",
             "value": 1000
         }]
+    },
+    {
+        "name": "Saute",
+        "minRange": 1,
+        "maxRange": 8,
+        "apCost": 3,
+        "aoe": [
+            [
+                1
+            ]
+        ],
+        "effects": [{
+            "effect": "jump"
+        }]
     }
 ]

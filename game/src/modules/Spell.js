@@ -28,7 +28,9 @@ export default class Spell {
         this.freeCell = false;
         this.takenCell = false;
 
-        this.aoe = [[1]];
+        this.aoe = [
+            [1]
+        ];
 
         this.turnCast = 0;
         this.targetCast = 0;
@@ -176,12 +178,12 @@ export default class Spell {
 
         for (var entity of entities) {
             if (tiles.find((tile) => {
-                if (x != undefined && y != undefined && entity.id == this.entity.id) {
-                    return tile.x == x && tile.y == y;
-                } else {
-                    return tile.x == entity.x && tile.y == entity.y;
-                }
-            })) {
+                    if (x != undefined && y != undefined && entity.id == this.entity.id) {
+                        return tile.x == x && tile.y == y;
+                    } else {
+                        return tile.x == entity.x && tile.y == entity.y;
+                    }
+                })) {
                 affectedEntities.push(entity);
             }
         }
@@ -197,7 +199,10 @@ export default class Spell {
         for (var x = 0; x < tiles.length; x++) {
             for (var y = 0; y < tiles[x].length; y++) {
                 if (this.fastCastCheck(x, y)) {
-                    var cell = { x: x, y: y };
+                    var cell = {
+                        x: x,
+                        y: y
+                    };
                     if (this.checkCast(x, y, false)) {
                         cell.castable = true;
                     }
@@ -240,8 +245,8 @@ export default class Spell {
             }
 
             if (this.historic.find((history) => {
-                return history.turn <= this.fight.turn - this.cooldown;
-            })) {
+                    return history.turn <= this.fight.turn - this.cooldown;
+                })) {
                 return false;
             }
         }
@@ -374,7 +379,15 @@ export default class Spell {
         }
 
         if (execute) {
-            GameEvent.send({ type: "cast", spell: this.id, entity: this.entity.id, x: x2, y: y2, sx: x1, sy: y1 });
+            GameEvent.send({
+                type: "cast",
+                spell: this.id,
+                entity: this.entity.id,
+                x: x2,
+                y: y2,
+                sx: x1,
+                sy: y1
+            });
 
             this.entity.currentCharacteristics.usedAP += this.apCost;
             this.entity.currentCharacteristics.usedMP += this.mpCost;
@@ -388,35 +401,31 @@ export default class Spell {
 
         var aiScore = 0;
 
-        //Entities
-        for (var entity of this.getAffectedEntities(this.getAoeTiles(x1, y1, x2, y2), x1, y1)) {
-            for (var effect of this.effects) {
-                if (Effects[effect.effect]) {
-                    var e = new (Effects[effect.effect])(Object.assign({
-                        fight: this.fight,
-                        spell: this,
-                        source: this.entity,
-                        target: entity,
-                        x: x2,
-                        y: y2,
-                        cx: entity.x,
-                        cy: entity.y
-                    }, effect));
-
-                    if (execute) {
-                        e.cast();
-                    } else {
-                        aiScore += e.ai();
-                    }
-                }
-            }
-        }
-
-        //Tiles
         for (var tile of this.getAoeTiles(x1, y1, x2, y2)) {
             for (var effect of this.effects) {
                 if (Effects[effect.effect]) {
-                    var e = new (Effects[effect.effect])(Object.assign({
+
+                    var entity = this.fight.map.getCellEntity(tile.x, tile.y);
+                    if (entity) {
+                        var e = new(Effects[effect.effect])(Object.assign({
+                            fight: this.fight,
+                            spell: this,
+                            source: this.entity,
+                            target: entity,
+                            x: x2,
+                            y: y2,
+                            cx: entity.x,
+                            cy: entity.y
+                        }, effect));
+
+                        if (execute) {
+                            e.cast();
+                        } else {
+                            aiScore += e.ai();
+                        }
+                    }
+
+                    var e = new(Effects[effect.effect])(Object.assign({
                         fight: this.fight,
                         spell: this,
                         source: this.entity,

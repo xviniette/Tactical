@@ -55,16 +55,6 @@ export default class Entity extends Element {
     getCharacteristics() {
         var characteristics = JSON.parse(JSON.stringify(this.defaultCharacteristics));
 
-        for (var effect of this.fight.effects.filter((e) => {return e.target && e.target.id == this.id})) {
-            if (effect.characteristic) {
-                if (characteristics[effect.characteristic]) {
-                    characteristics[effect.characteristic] += effect.value;
-                } else {
-                    characteristics[effect.characteristic] = effect.value;
-                }
-            }
-        }
-
         //characteristics limits
         characteristics.life = Math.max(1, characteristics.life);
         characteristics.erosion = Math.min(50, characteristics.erosion);
