@@ -68,7 +68,7 @@ export default class Map extends Element {
             return null;
         }
 
-        return this.fight.entities.find((entity) => {
+        return this.fight.getAliveEntities().find((entity) => {
             return entity.x == x && entity.y == y;
         });
     }
@@ -93,7 +93,7 @@ export default class Map extends Element {
         var cells = this.getCellsAround(x, y, range);
 
         cells.forEach((cell) => {
-            var entity = this.fight.entities.find((e) => {
+            var entity = this.fight.getAliveEntities().find((e) => {
                 return e.x == cell.x && e.y == cell.y;
             });
 
@@ -186,7 +186,7 @@ export default class Map extends Element {
                 return false;
             }
 
-            if (entitiesBlock && this.fight.entities.find((e) => {
+            if (entitiesBlock && this.fight.getAliveEntities().find((e) => {
                 if (ignoredEntity) {
                     return e.x == pt.x && e.y == pt.y && e.id != ignoredEntity;
                 } else {

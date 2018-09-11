@@ -11,7 +11,7 @@ export default class Fight extends Element {
             fight: this
         });
         this.entities = [];
-        this.turn = 0;
+        this.turn = 1;
         this.currentEntity = null;
         this.timer = null;
         this.turnTime = null;
@@ -36,24 +36,25 @@ export default class Fight extends Element {
     }
 
     nextEntity() {
-        if (this.entities.length == 0) {
+        var entities = this.getAliveEntities();
+        if (entities.length == 0) {
             return false;
         }
 
         var entity;
 
         if (!this.currentEntity) {
-            entity = this.entities[0];
+            entity = entities[0];
         } else {
-            var index = this.entities.findIndex((entity) => {
+            var index = entities.findIndex((entity) => {
                 return entity.id == this.currentEntity.id;
             });
 
-            if (index + 1 > this.entities.length - 1) {
-                entity = this.entities[0];
+            if (index + 1 > entities.length - 1) {
+                entity = entities[0];
                 this.turn++;
             } else {
-                entity = this.entities[index + 1];
+                entity = entities[index + 1];
             }
         }
 
@@ -73,6 +74,10 @@ export default class Fight extends Element {
         return this.entities.find((entity) => {
             return entity.id == id;
         });
+    }
+
+    getAliveEntities(){
+        return this.entities.filter((e) => {return e.alive});
     }
 
     isOver() {

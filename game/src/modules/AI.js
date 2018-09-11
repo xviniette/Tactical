@@ -38,7 +38,13 @@ export default class AI extends Entity {
                         for (var y = 0; y < this.fight.map.tiles[x].length; y++) {
                             var score = spell.cast(movementTile.x, movementTile.y, x, y, false);
                             if (score && score > 0) {
-                                castables.push({ score: score - movementTile.usedAP - movementTile.usedMP, movementTile: movementTile, x: x, y: y, spell: spell });
+                                castables.push({
+                                    score: score - movementTile.usedAP - movementTile.usedMP,
+                                    movementTile: movementTile,
+                                    x: x,
+                                    y: y,
+                                    spell: spell
+                                });
                             }
                         }
                     }
@@ -69,18 +75,28 @@ export default class AI extends Entity {
         movementTiles.forEach(tile => {
             var score = 0;
 
-            if (this.aggressive) {
-                this.fight.entities.filter((entity) => { return entity.team != this.team }).forEach((entity) => {
-                    score += Math.pow(100 - (Math.abs(entity.x - tile.x) + Math.abs(entity.y - tile.y)), 3) - tile.usedAP - tile.usedMP;
-                });
-            } else {
-                score += Math.pow(Math.abs(entity.x - tile.x) + Math.abs(entity.y - tile.y), 3);
-                if(!this.fight.map.inLineOfSight(tile.x, tile.y, entity.x, entity.y)){
-                    score += 100;
-                }
+            if(this.aggressive){
+                score -= tile.usedAP + tile.usedMP;
             }
 
-            movementScores.push({ x: tile.x, y: tile.y, score: score });
+            this.fight.getAliveEntities().filter((entity) => {
+                return entity.team != this.team
+            }).forEach((entity) => {
+                if (this.aggressive) {
+                    score += Math.pow(100 - (Math.abs(entity.x - tile.x) + Math.abs(entity.y - tile.y)), 3);
+                } else {
+                    score += Math.pow(Math.abs(entity.x - tile.x) + Math.abs(entity.y - tile.y), 3);
+                    if (!this.fight.map.inLineOfSight(tile.x, tile.y, entity.x, entity.y)) {
+                        score += 100;
+                    }
+                }
+            });
+
+            movementScores.push({
+                x: tile.x,
+                y: tile.y,
+                score: score
+            });
         });
 
         if (movementScores.length > 0) {
@@ -91,6 +107,8 @@ export default class AI extends Entity {
             this.move(movementScores[0].x, movementScores[0].y);
         }
 
-        this.endTurn();
+        setTimeout(() => {
+            this.endTurn();
+        }, 1000);
     }
 }

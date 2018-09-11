@@ -42,7 +42,8 @@ export default class Buff extends Effect {
                         type: "characteristic",
                         entity: this.target.id,
                         characteristic: this.characteristic,
-                        value: this.value
+                        value: this.value,
+                        duration: this.duration
                     });
                 }
             }

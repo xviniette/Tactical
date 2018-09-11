@@ -6,7 +6,7 @@
             "anchorY": 110,
             "width": 450,
             "height": 392
-            
+
         },
         "hero": {
             "path": "./assets/npc/hero.png",
@@ -21,6 +21,20 @@
             "anchorY": 150,
             "width": 167,
             "height": 185
+        },
+        "monster1": {
+            "path": "./assets/npc/NPC1.png",
+            "anchorX": 90,
+            "anchorY": 225,
+            "width": 178,
+            "height": 244
+        },
+        "monster2": {
+            "path": "./assets/npc/NPC3.png",
+            "anchorX": 90,
+            "anchorY": 225,
+            "width": 178,
+            "height": 244
         }
     }
 }

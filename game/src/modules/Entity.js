@@ -75,7 +75,7 @@ export default class Entity extends Element {
 
         this.characteristics = characteristics;
 
-        if(this.alive && this.characteristics.currentLife <= 0){
+        if (this.alive && this.characteristics.currentLife <= 0) {
             this.alive = false;
             this.die();
         }
@@ -118,6 +118,8 @@ export default class Entity extends Element {
 
         this.currentCharacteristics.usedMP += tile.usedMP;
         this.currentCharacteristics.usedAP += tile.usedAP;
+
+
 
         this.x = tile.x;
         this.y = tile.y;
@@ -242,6 +244,10 @@ export default class Entity extends Element {
     die() {
         if (this.fight.isOver()) {
             this.fight.end();
+        }
+
+        if (this.myTurn()) {
+            this.fight.nextEntity();
         }
     }
 

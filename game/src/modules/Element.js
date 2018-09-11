@@ -1,6 +1,6 @@
 "use strict";
 
-class Element {
+export default class Element {
     constructor(json) {
     }
 
@@ -17,5 +17,3 @@ class Element {
         deepMerge(this, json);
     }
 }
-
-export default Element;

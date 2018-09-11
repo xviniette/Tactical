@@ -8,7 +8,7 @@ import assetFiles from "../assets.json";
 import jsonFight from "../fight.json";
 import spells from "../spells.json";
 
-class GameScene extends Phaser.Scene {
+export default class GameScene extends Phaser.Scene {
     constructor(config) {
         super({
             key: 'GameScene'
@@ -38,6 +38,8 @@ class GameScene extends Phaser.Scene {
             spell: null,
             entity: null
         }
+
+        this.tweenHistoric = [];
     }
 
     create() {
@@ -53,12 +55,28 @@ class GameScene extends Phaser.Scene {
         });
     }
 
+    getBlockingDelay() {
+        var now = Date.now();
+        for (var i = this.tweenHistoric.length - 1; i >= 0; i--) {
+            if (this.tweenHistoric[i].blocking && this.tweenHistoric[i].endTimestamp > now) {
+                return this.tweenHistoric[i].endTimestamp - now;
+            }
+        }
+        return 0;
+    }
+
     eventHandler(data = {}) {
         console.log(data);
 
         switch (data.type) {
             case "move":
                 var entity = this.fight.getEntity(data.entity);
+                if (!entity) {
+                    return;
+                }
+
+                var startDelay = this.getBlockingDelay();
+                var tileDuration = 300;
 
                 data.tile.path.forEach((t, index) => {
                     var position = this.getIsometricPosition(t.x, t.y);
@@ -66,10 +84,17 @@ class GameScene extends Phaser.Scene {
                         targets: entity.sprite,
                         x: position.x,
                         y: position.y,
-                        duration: 200,
-                        delay: index * 200
+                        duration: tileDuration,
+                        delay: tileDuration * index + startDelay
                     });
                 });
+
+                this.tweenHistoric.push({
+                    blocking: true,
+                    startTimestamp: Date.now() + startDelay,
+                    endTimestamp: Date.now() + startDelay + data.tile.path.length * tileDuration
+                });
+
                 break;
 
             case "moved":
@@ -85,36 +110,39 @@ class GameScene extends Phaser.Scene {
                 break;
 
             case "cast":
-                var entity = this.fight.getEntity(data.entity);
-                var spell = entity.spells.find((s) => {
-                    return s.id == data.spell;
-                });
+                var entity = this.fight.getEntity(data.entity.id);
+                if (!entity) {
+                    return;
+                }
 
                 var position = this.getIsometricPosition(data.x, data.y);
 
-                var text = this.add.text(position.x, position.y - 80, spell.name, {
+                var text = this.add.text(position.x, position.y - 80, data.spell.name, {
                     fontSize: "20px"
                 });
                 text.setOrigin(0.5, 0.5);
+                text.alpha = 0;
+
+                var startDelay = this.getBlockingDelay();
+                console.log(JSON.stringify(this.tweenHistoric));
+                console.log(Date.now());
+                console.log(startDelay);
+                var castTime = 800;
 
                 this.tweens.add({
                     targets: text,
-                    props: {
-                        y: {
-                            value: '+=30',
-                            duration: 3000
-                        },
-                        alpha: {
-                            value: 0,
-                            duration: 3000
-                        },
+                    y: "+=30",
+                    duration: 3000,
+                    delay: startDelay,
+                    onPlay() {
+                        text.alpha = 1;
                     },
                     onComplete() {
                         text.destroy();
                     }
                 });
 
-                var tiles = spell.getAoeTiles(data.sx, data.sy, data.x, data.y);
+                var tiles = data.spell.getAoeTiles(data.sx, data.sy, data.x, data.y);
 
                 tiles.forEach((tile) => {
                     var position = this.getIsometricPosition(tile.x, tile.y);
@@ -138,6 +166,8 @@ class GameScene extends Phaser.Scene {
                     graphics.x = position.x;
                     graphics.y = position.y;
 
+                    graphics.visible = false;
+
                     this.tweens.add({
                         targets: graphics,
                         props: {
@@ -147,10 +177,20 @@ class GameScene extends Phaser.Scene {
                                 ease: 'Sine.easeOut'
                             },
                         },
+                        delay: startDelay,
+                        onPlay() {
+                            graphics.visible = true;
+                        },
                         onComplete() {
                             graphics.destroy();
                         }
                     });
+                });
+
+                this.tweenHistoric.push({
+                    blocking: true,
+                    startTimestamp: Date.now() + startDelay,
+                    endTimestamp: Date.now() + startDelay + castTime
                 });
 
                 break;
@@ -167,6 +207,46 @@ class GameScene extends Phaser.Scene {
                 });
                 break;
             default:
+
+            case "characteristic":
+                return;
+                var entity = this.fight.getEntity(data.entity);
+
+                var colors = {
+                    "hp": "#FF0000",
+                    "power": "#f4aa42",
+                    "ap": "#52aed8",
+                    "mp": "#41f47a",
+                    // "power":"#f4aa42",
+
+                }
+
+                var position = this.getIsometricPosition(entity.x, entity.y);
+
+                var text = this.add.text(position.x, position.y - 80, data.value, {
+                    fontSize: "20px",
+                    color: colors[data.characteristic]
+                });
+
+                text.setOrigin(0.5, 0.5);
+
+                this.tweens.add({
+                    targets: text,
+                    props: {
+                        y: {
+                            value: '-=30',
+                            duration: 3000
+                        },
+                        alpha: {
+                            value: 0,
+                            duration: 3000
+                        },
+                    },
+                    onComplete() {
+                        text.destroy();
+                    }
+                });
+                break;
         }
     }
 
@@ -177,11 +257,15 @@ class GameScene extends Phaser.Scene {
         this.fight.map = new Map(Object.assign(jsonFight.map, {
             fight: this.fight
         }));
-        
+
+        console.log(jsonFight);
+
         for (var entity of jsonFight.players) {
-            var e = new Player(Object.assign(entity, {fight: this.fight}));
+            var e = new Player(Object.assign(entity, {
+                fight: this.fight
+            }));
             e.spells = [];
-            for(var spell of entity.spells){
+            for (var spell of entity.spells) {
                 var s = new Spell(spell);
                 s.fight = this.fight;
                 s.entity = e;
@@ -191,9 +275,11 @@ class GameScene extends Phaser.Scene {
         }
 
         for (var entity of jsonFight.ais) {
-            var e = new AI(Object.assign(entity, {fight: this.fight}));
+            var e = new AI(Object.assign(entity, {
+                fight: this.fight
+            }));
             e.spells = [];
-            for(var spell of entity.spells){
+            for (var spell of entity.spells) {
                 var s = new Spell(spell);
                 s.fight = this.fight;
                 s.entity = e;
@@ -213,6 +299,11 @@ class GameScene extends Phaser.Scene {
     }
 
     setUI() {
+        var me = this.fight.getEntity(this.me);
+        if (!me) {
+            return;
+        }
+
         this.ui.endTurn = this.add.text(500, 550, "END TURN", {
             color: "#ffff00"
         }).setInteractive();
@@ -347,7 +438,7 @@ class GameScene extends Phaser.Scene {
         }
 
         this.fight.entities.forEach((entity) => {
-            entity.sprite = this.createIsometricSprite(entity.x, entity.y, "hero")
+            entity.sprite = this.createIsometricSprite(entity.x, entity.y, entity.sprite);
         });
     }
 
@@ -416,5 +507,3 @@ class GameScene extends Phaser.Scene {
         return sprite;
     }
 }
-
-export default GameScene;

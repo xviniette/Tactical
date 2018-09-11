@@ -43,26 +43,12 @@ export default class Spell {
 
         this.historic = [];
 
-        //AI
-        this.type = Spell.spellType().opponent;
-
         this.init(json);
-
-        this.cooldown = this.initialCooldown;
     }
 
     init(json = {}) {
         for (var i in json) {
             this[i] = json[i];
-        }
-    }
-
-    static spellType() {
-        return {
-            "opponent": 0,
-            "ally": 1,
-            "invocation": 2,
-            "movement": 3
         }
     }
 
@@ -88,20 +74,6 @@ export default class Spell {
 
         var range = Math.abs(x2 - x1) + Math.abs(y2 - y1);
         return range >= this.minRange && range <= (this.computedMaxRange || this.maxRange);
-    }
-
-    isFree(x, y) {
-        var entities = this.fight.entities;
-        for (var entity of entities) {
-            if (entity.x == x && entity.y == y) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    isTaken(x, y) {
-        return !this.isFree(x, y);
     }
 
     inLimitation(x1, y1, x2 = undefined, y2 = undefined) {
@@ -173,7 +145,7 @@ export default class Spell {
     }
 
     getAffectedEntities(tiles = [], x = undefined, y = undefined) {
-        var entities = this.fight.entities;
+        var entities = this.fight.getAliveEntities();
         var affectedEntities = [];
 
         for (var entity of entities) {
@@ -237,15 +209,17 @@ export default class Spell {
     }
 
     checkCooldown() {
-        //cooldown
-        if (this.cooldown > 0) {
-            //Initial
-            if (this.cooldown > this.fight.turn) {
+        //Initial cd
+        if (this.initialCooldown > 0) {
+            if (this.initialCooldown >= this.fight.turn) {
                 return false;
             }
+        }
 
+        //cooldown
+        if (this.cooldown > 0) {
             if (this.historic.find((history) => {
-                    return history.turn <= this.fight.turn - this.cooldown;
+                    return history.turn >= this.fight.turn - this.cooldown;
                 })) {
                 return false;
             }
@@ -347,11 +321,11 @@ export default class Spell {
             return false;
         }
 
-        if (this.freeCell && !this.isFree(x2, y2)) {
+        if (this.freeCell && !this.fight.map.isFree(x2, y2)) {
             return false;
         }
 
-        if (this.takenCell && !this.isTaken(x2, y2)) {
+        if (this.takenCell && !this.fight.map.isTaken(x2, y2)) {
             return false;
         }
 
@@ -381,8 +355,8 @@ export default class Spell {
         if (execute) {
             GameEvent.send({
                 type: "cast",
-                spell: this.id,
-                entity: this.entity.id,
+                spell: this,
+                entity: this.entity,
                 x: x2,
                 y: y2,
                 sx: x1,
@@ -392,12 +366,14 @@ export default class Spell {
             this.entity.currentCharacteristics.usedAP += this.apCost;
             this.entity.currentCharacteristics.usedMP += this.mpCost;
 
-            this.historic.push({
+            var historic = {
                 turn: this.fight.turn,
                 x: x2,
-                y: y2
-            });
+                y: y2,
+            };
         }
+
+        var affectedEntities = [];
 
         var aiScore = 0;
 
@@ -406,7 +382,9 @@ export default class Spell {
                 if (Effects[effect.effect]) {
 
                     var entity = this.fight.map.getCellEntity(tile.x, tile.y);
-                    if (entity) {
+                    if (entity && entity.alive) {
+                        affectedEntities.push(entity.id);
+
                         var e = new(Effects[effect.effect])(Object.assign({
                             fight: this.fight,
                             spell: this,
@@ -442,6 +420,11 @@ export default class Spell {
                     }
                 }
             }
+        }
+
+        if (execute) {
+            historic.entities = affectedEntities;
+            this.historic.push(historic);
         }
 
         return aiScore;
