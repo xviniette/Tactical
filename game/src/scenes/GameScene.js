@@ -15,11 +15,12 @@ export default class GameScene extends Phaser.Scene {
         });
 
         this.tilesize = {
-            x: 80,
-            y: 40
+            x: 120,
+            y: 60
         };
+
         this.offset = {
-            x: 400,
+            x: 500,
             y: 100
         };
         this.scaleValue = 1;
@@ -43,6 +44,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
+        console.log(this);
         this.setGame();
         this.setGameRenderer();
 
@@ -318,14 +320,25 @@ export default class GameScene extends Phaser.Scene {
         this.ui.spells = this.add.container();
 
         this.fight.getEntity(this.me).spells.forEach((spell, index) => {
-            var s = this.add.text(0 + index * 100, 550, spell.name, {
-                color: "#ffff00"
-            }).setInteractive();
-            s.spellId = spell.id;
+            var s = this.add.container();
+            if(!spell.sprite){
+                spell.sprite = "spell";
+            }
+
+            s.icon = this.add.sprite(0, 0, spell.sprite).setInteractive();
+            s.add(s.icon);
+            s.icon.setOrigin(0.5, 0.5);
+            // var s = this.add.text(0 + index * 100, 550, spell.name, {
+            //     color: "#ffff00"
+            // }).setInteractive();
+            s.icon.spellId = spell.id;
+
+            s.x = index * 100;
+            s.y = 500;
 
             var _this = this;
 
-            s.on("pointerdown", function () {
+            s.icon.on("pointerdown", function () {
                 _this.selected.spell = this.spellId;
                 _this.setTiles();
             });

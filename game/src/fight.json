@@ -8,6 +8,7 @@
         "sprite": "hero",
         "spells": [{
                 "name": "Taper",
+                "sprite":"spell_damage",
                 "minRange": 1,
                 "maxRange": 1,
                 "apCost": 3,
