@@ -119,8 +119,6 @@ export default class Entity extends Element {
         this.currentCharacteristics.usedMP += tile.usedMP;
         this.currentCharacteristics.usedAP += tile.usedAP;
 
-
-
         this.x = tile.x;
         this.y = tile.y;
 
@@ -256,6 +254,11 @@ export default class Entity extends Element {
     }
 
     startTurn() {
+        GameEvent.send({
+            type: "turn",
+            entity: this
+        });
+
         this.fight.effects.filter((e) => {
             return e.target.id == this.id
         }).forEach((e) => {

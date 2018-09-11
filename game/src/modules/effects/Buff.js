@@ -40,7 +40,9 @@ export default class Buff extends Effect {
 
                     GameEvent.send({
                         type: "characteristic",
-                        entity: this.target.id,
+                        entity: this.target,
+                        x: this.target.x,
+                        y: this.target.y,
                         characteristic: this.characteristic,
                         value: this.value,
                         duration: this.duration

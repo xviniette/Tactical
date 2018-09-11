@@ -75,7 +75,7 @@ export default class AI extends Entity {
         movementTiles.forEach(tile => {
             var score = 0;
 
-            if(this.aggressive){
+            if (this.aggressive) {
                 score -= tile.usedAP + tile.usedMP;
             }
 
@@ -107,8 +107,6 @@ export default class AI extends Entity {
             this.move(movementScores[0].x, movementScores[0].y);
         }
 
-        setTimeout(() => {
-            this.endTurn();
-        }, 1000);
+        this.endTurn();
     }
 }

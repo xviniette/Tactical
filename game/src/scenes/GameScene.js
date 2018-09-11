@@ -124,9 +124,6 @@ export default class GameScene extends Phaser.Scene {
                 text.alpha = 0;
 
                 var startDelay = this.getBlockingDelay();
-                console.log(JSON.stringify(this.tweenHistoric));
-                console.log(Date.now());
-                console.log(startDelay);
                 var castTime = 800;
 
                 this.tweens.add({
@@ -209,38 +206,43 @@ export default class GameScene extends Phaser.Scene {
             default:
 
             case "characteristic":
-                return;
-                var entity = this.fight.getEntity(data.entity);
-
                 var colors = {
-                    "hp": "#FF0000",
+                    "hp": "#ff0000",
                     "power": "#f4aa42",
                     "ap": "#52aed8",
                     "mp": "#41f47a",
-                    // "power":"#f4aa42",
-
                 }
 
-                var position = this.getIsometricPosition(entity.x, entity.y);
+                var position = this.getIsometricPosition(data.x, data.y);
 
                 var text = this.add.text(position.x, position.y - 80, data.value, {
                     fontSize: "20px",
-                    color: colors[data.characteristic]
+                    color: colors[data.characteristic] ? colors[data.characteristic] : "#FFFFFF"
                 });
 
                 text.setOrigin(0.5, 0.5);
+                text.visible = false;
+
+                var deltaCharac = 100;
+                var delay = 0;
+
+                for (var i = this.tweenHistoric.length - 1; i >= 0; i--) {
+                    if (this.tweenHistoric[i].blocking) {
+                        delay = this.tweenHistoric[i].startTimestamp - Date.now();
+                        break;
+                    }
+                }
+
+                delay += (this.tweenHistoric.length - i) * deltaCharac;
 
                 this.tweens.add({
                     targets: text,
-                    props: {
-                        y: {
-                            value: '-=30',
-                            duration: 3000
-                        },
-                        alpha: {
-                            value: 0,
-                            duration: 3000
-                        },
+                    y: "-=30",
+                    alpha: 0,
+                    duration: 500,
+                    delay: Math.max(0, delay),
+                    onPlay() {
+                        text.visible = true;
                     },
                     onComplete() {
                         text.destroy();
@@ -257,8 +259,6 @@ export default class GameScene extends Phaser.Scene {
         this.fight.map = new Map(Object.assign(jsonFight.map, {
             fight: this.fight
         }));
-
-        console.log(jsonFight);
 
         for (var entity of jsonFight.players) {
             var e = new Player(Object.assign(entity, {

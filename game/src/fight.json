@@ -5,7 +5,7 @@
         "team": 1,
         "x": 4,
         "y": 3,
-        "sprite":"hero",
+        "sprite": "hero",
         "spells": [{
                 "name": "Taper",
                 "minRange": 1,
@@ -26,6 +26,7 @@
                 "maxRange": 5,
                 "los": false,
                 "apCost": 3,
+                "freeCell": true,
                 "aoe": [
                     [
                         1
@@ -53,54 +54,55 @@
                     "value": 50,
                     "duration": 999999
                 }],
-                "cooldown":2
+                "cooldown": 2
             }
         ]
     }],
     "ais": [{
-        "name": "Vache",
-        "team": 1,
-        "x": 6,
-        "y": 4,
-        "sprite":"monster2",
-        "spells": [{
-            "name": "Taper",
-            "minRange": 3,
-            "maxRange": 8,
-            "apCost": 3,
-            "aoe": [
-                [
-                    1
-                ]
-            ],
-            "effects": [{
-                "effect": "damage",
-                "damage": 10
+            "name": "Vache",
+            "team": 1,
+            "x": 6,
+            "y": 4,
+            "sprite": "monster2",
+            "spells": [{
+                "name": "Taper",
+                "minRange": 3,
+                "maxRange": 8,
+                "apCost": 3,
+                "aoe": [
+                    [
+                        1
+                    ]
+                ],
+                "effects": [{
+                    "effect": "damage",
+                    "damage": 10
+                }]
             }]
-        }]
-    },
-    {
-        "name": "Loup",
-        "team": 2,
-        "x": 3,
-        "y": 3,
-        "sprite":"monster1",
-        "spells": [{
-            "name": "Taper",
-            "minRange": 1,
-            "maxRange": 1,
-            "apCost": 3,
-            "aoe": [
-                [
-                    1
-                ]
-            ],
-            "effects": [{
-                "effect": "damage",
-                "damage": 10
+        },
+        {
+            "name": "Loup",
+            "team": 2,
+            "x": 3,
+            "y": 3,
+            "sprite": "monster1",
+            "spells": [{
+                "name": "Taper",
+                "minRange": 1,
+                "maxRange": 1,
+                "apCost": 3,
+                "aoe": [
+                    [
+                        1
+                    ]
+                ],
+                "effects": [{
+                    "effect": "damage",
+                    "damage": 10
+                }]
             }]
-        }]
-    }],
+        }
+    ],
     "map": {
         "tiles": [
             [0, 0, 0, 0, 0, 0, 0, 0],
