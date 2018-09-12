@@ -34,7 +34,7 @@
                     ]
                 ],
                 "effects": [{
-                    "effect": "jump"
+                    "effect": "teleport"
                 }]
             },
             {

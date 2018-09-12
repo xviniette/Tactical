@@ -19,20 +19,15 @@ export default class Buff extends Effect {
             duration: 1,
             delay: 0,
             triggers: [Triggers.onCast, Triggers.onTargetStart],
-            onCast: true,
-            onTargetStart: true
         }
     }
 
     execute(execute = true) {
         if (this.target) {
             if (!execute) {
-                return false;
-            }
-
-            if (!this.added && this.duration > 0) {
-                this.added = true;
-                this.fight.effects.push(this);
+                return {
+                    ai: this.target.team == this.source.team ? 1 : -1 * Math.sign(this.value)
+                };
             }
 
             if (this.manageDuration()) {
@@ -56,7 +51,7 @@ export default class Buff extends Effect {
         return false;
     }
 
-    remove() {
+    onRemoveEffect() {
         this.target.defaultCharacteristics[this.characteristic] -= this.value;
         return false;
     }

@@ -17,32 +17,28 @@ export default class Jump extends Effect {
     }
 
     execute(execute = true) {
-        return Jump.jump(this, execute);
-    }
-
-    static jump(data = {}, execute = true) {
-        if (data.target == null) {
+        if (this.target == null) {
             if (execute) {
-                data.source.x = data.x;
-                data.source.y = data.y;
+                this.source.x = this.x;
+                this.source.y = this.y;
 
                 GameEvent.send({
                     type: "jump",
-                    entity: data.source.id,
-                    x: data.source.x,
-                    y: data.source.y
+                    entity: this.source.id,
+                    x: this.source.x,
+                    y: this.source.y
                 });
             }
 
             var score = 0;
 
-            data.fight.entities.filter((entity) => {
-                return entity.team != data.source.team;
+            this.fight.getAliveEntities().filter((entity) => {
+                return entity.team != this.source.team;
             }).forEach((entity) => {
-                if (data.aggressiveAi) {
-                    score += Math.pow(100 - (Math.abs(entity.x - data.x) + Math.abs(entity.y - data.y)), 3);
+                if (this.aggressiveAi) {
+                    score += Math.pow(100 - (Math.abs(entity.x - this.x) + Math.abs(entity.y - this.y)), 3);
                 } else {
-                    score += Math.pow(Math.abs(entity.x - data.x) + Math.abs(entity.y - data.y), 3);
+                    score += Math.pow(Math.abs(entity.x - this.x) + Math.abs(entity.y - this.y), 3);
                 }
             });
 

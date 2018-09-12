@@ -1,5 +1,7 @@
 "use strict";
 
+import Triggers from "./Triggers.json"
+
 export default class Effect {
     constructor(json = {}) {
         this.id = Math.random().toString(36).substr(2, 9);
@@ -36,11 +38,13 @@ export default class Effect {
         return {};
     }
 
-    on(trigger = null, callback = () => {}) {
+    on(trigger = null) {
+        if (trigger && this[trigger]) {
+            this[trigger]();
+        }
+
         if (this.triggers.includes(trigger)) {
             return this.execute();
-        } else if (this[trigger]) {
-            return this[trigger]();
         }
 
         return false;
@@ -59,13 +63,19 @@ export default class Effect {
         return false;
     }
 
+    onCast() {
+        if (this.duration > 0) {
+            this.fight.effects.push(this);
+        }
+    }
+
     removeEffect() {
         var index = this.fight.effects.findIndex((e) => {
             return e.id == this.id;
         });
 
         this.fight.effects.splice(index, 1);
-        this.remove();
+        this.on(Triggers.onRemoveEffect);
     }
 
     manageDuration() {

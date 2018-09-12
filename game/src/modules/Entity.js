@@ -2,6 +2,7 @@
 
 import Element from "./Element.js"
 import GameEvent from "./GameEvent.js"
+import Triggers from "./effects/Triggers.json"
 
 export default class Entity extends Element {
     constructor(json) {
@@ -260,15 +261,15 @@ export default class Entity extends Element {
         });
 
         this.fight.effects.filter((e) => {
-            return e.target.id == this.id
+            return e.target != undefined && e.target.id == this.id
         }).forEach((e) => {
-            e.targetStart();
+            e.on(Triggers.onTurnStart);
         });
 
         this.fight.effects.filter((e) => {
             return e.source.id == this.id
         }).forEach((e) => {
-            e.sourceStart();
+            e.on(Triggers.onSourceTurnStart);
         });
 
         this.play();
@@ -277,15 +278,15 @@ export default class Entity extends Element {
     endTurn() {
         if (this.myTurn()) {
             this.fight.effects.filter((e) => {
-                return e.target.id == this.id
+                return e.target != undefined && e.target.id == this.id
             }).forEach((e) => {
-                e.targetEnd();
+                e.on(Triggers.onTurnEnd);
             });
 
             this.fight.effects.filter((e) => {
                 return e.source.id == this.id
             }).forEach((e) => {
-                e.sourceEnd();
+                e.on(Triggers.onSourceTurnEnd);
             });
 
             this.currentCharacteristics.usedAP = 0;
