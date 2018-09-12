@@ -8,7 +8,7 @@
         "sprite": "hero",
         "spells": [{
                 "name": "Taper",
-                "sprite":"spell_damage",
+                "sprite": "spell_damage",
                 "minRange": 1,
                 "maxRange": 1,
                 "apCost": 3,
@@ -34,6 +34,7 @@
                     ]
                 ],
                 "effects": [{
+                    "target":"castedCells",
                     "effect": "teleport"
                 }]
             },
@@ -50,6 +51,7 @@
 
                 ],
                 "effects": [{
+                    "target": "entities",
                     "effect": "buff",
                     "characteristic": "power",
                     "value": 50,

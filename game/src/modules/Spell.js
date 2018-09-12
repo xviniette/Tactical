@@ -374,45 +374,86 @@ export default class Spell {
             };
         }
 
-        var affectedEntities = [];
-
         var aiScore = 0;
 
-        for (var tile of this.getAoeTiles(x1, y1, x2, y2)) {
-            for (var effect of this.effects) {
-                if (Effects[effect.effect]) {
+        var tiles = this.getAoeTiles(x1, y1, x2, y2);
+        var entities = this.getAffectedEntities(tiles, x1, y1);
 
-                    var entity = this.fight.map.getCellEntity(tile.x, tile.y);
-                    if (entity && entity.alive) {
-                        affectedEntities.push(entity.id);
+        this.effects.forEach((effect) => {
+            if (!Effects[effect.effect]) {
+                return;
+            }
 
-                        var e = new(Effects[effect.effect])(Object.assign({
-                            fight: this.fight,
-                            spell: this,
-                            source: this.entity,
-                            target: entity,
+            if (!effect.target) {
+                effect.target = "";
+            }
+
+            var affectedTiles = [...tiles];
+            var affectedEntities = [...entities];
+
+            effect.target.split("|").forEach((filter) => {
+                switch (filter) {
+                    //cells
+                    case "cells":
+                        affectedEntities = [];
+                        break;
+                    case "castedCells":
+                        affectedTiles = [{
                             x: x2,
-                            y: y2,
-                            cx: entity.x,
-                            cy: entity.y
-                        }, effect));
+                            y: y2
+                        }];
+                        break;
 
-                        if (execute) {
-                            e.on(Triggers.onCast);
-                        } else {
-                            aiScore += e.ai();
-                        }
-                    }
+                        //entities
+                    case "entities":
+                        affectedTiles = [];
+                        break;
+                    case "allies":
+                        affectedEntities = entities.filter((e) => {
+                            return e.team == this.entity.team
+                        });
+                        break;
+                    case "opponents":
+                        affectedEntities = entities.filter((e) => {
+                            return e.team != this.entity.team
+                        });
+                        break;
+                }
+            });
 
+            affectedTiles.forEach((tile) => {
+                var e = new(Effects[effect.effect])(Object.assign({
+                    fight: this.fight,
+                    spell: this,
+                    source: this.entity,
+                    x: x2,
+                    y: y2,
+                    cx: tile.x,
+                    cy: tile.y
+                }, effect, {
+                    target: null
+                }));
+
+                if (execute) {
+                    e.on(Triggers.onCast);
+                } else {
+                    aiScore += e.ai();
+                }
+            });
+
+            affectedEntities.forEach((entity) => {
+                if (entity.alive) {
                     var e = new(Effects[effect.effect])(Object.assign({
                         fight: this.fight,
                         spell: this,
                         source: this.entity,
                         x: x2,
                         y: y2,
-                        cx: tile.x,
-                        cy: tile.y
-                    }, effect));
+                        cx: entity.x,
+                        cy: entity.y
+                    }, effect, {
+                        target: entity
+                    }));
 
                     if (execute) {
                         e.on(Triggers.onCast);
@@ -420,11 +461,11 @@ export default class Spell {
                         aiScore += e.ai();
                     }
                 }
-            }
-        }
+            })
+        });
 
         if (execute) {
-            historic.entities = affectedEntities;
+            historic.entities = entities;
             this.historic.push(historic);
         }
 

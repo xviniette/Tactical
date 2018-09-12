@@ -257,6 +257,7 @@ export default class Entity extends Element {
     startTurn() {
         GameEvent.send({
             type: "turn",
+            turn: this.fight.turn,
             entity: this
         });
 
