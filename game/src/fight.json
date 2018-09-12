@@ -42,7 +42,6 @@
                 "name": "Buff",
                 "minRange": 1,
                 "maxRange": 5,
-                "los": false,
                 "apCost": 3,
                 "aoe": [
                     [0, 1, 0],
