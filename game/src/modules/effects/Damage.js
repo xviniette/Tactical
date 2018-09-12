@@ -2,6 +2,7 @@
 
 import Effect from "./Effect.js"
 import GameEvent from "../GameEvent.js"
+import Triggers from "./Triggers.json"
 
 export default class Damage extends Effect {
     constructor(json) {
@@ -11,7 +12,7 @@ export default class Damage extends Effect {
     static defaultData() {
         return {
             damage: 1,
-            onCast: true
+            triggers: [Triggers.onCast]
         }
     }
 
@@ -52,7 +53,6 @@ export default class Damage extends Effect {
 
     static description(data = {}) {
         var d = Object.assign(Damage.defaultData(), data);
-
         return `${d.damage} Damage`
     }
 

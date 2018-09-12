@@ -2,6 +2,7 @@
 
 import Effect from "./Effect.js"
 import GameEvent from "../GameEvent.js"
+import Triggers from "./Triggers.json"
 
 export default class Jump extends Effect {
     constructor(json) {
@@ -11,7 +12,7 @@ export default class Jump extends Effect {
     static defaultData() {
         return {
             aggressiveAi: true,
-            onCast: true
+            triggers: [Triggers.onCast]
         }
     }
 
@@ -25,7 +26,12 @@ export default class Jump extends Effect {
                 data.source.x = data.x;
                 data.source.y = data.y;
 
-                GameEvent.send({ type: "jump", entity: data.source.id, x: data.source.x, y: data.source.y });
+                GameEvent.send({
+                    type: "jump",
+                    entity: data.source.id,
+                    x: data.source.x,
+                    y: data.source.y
+                });
             }
 
             var score = 0;
@@ -40,7 +46,9 @@ export default class Jump extends Effect {
                 }
             });
 
-            return { ai: score }
+            return {
+                ai: score
+            }
         }
 
         return false;

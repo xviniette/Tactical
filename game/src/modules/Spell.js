@@ -1,7 +1,8 @@
 "use strict";
 
-import Effects from "./effects/effects.js"
+import Effects from "./effects/Effects.js"
 import GameEvent from "./GameEvent.js"
+import Triggers from "./effects/Triggers.json"
 
 export default class Spell {
     constructor(json = {}) {
@@ -397,7 +398,7 @@ export default class Spell {
                         }, effect));
 
                         if (execute) {
-                            e.cast();
+                            e.on(Triggers.onCast);
                         } else {
                             aiScore += e.ai();
                         }
@@ -414,7 +415,7 @@ export default class Spell {
                     }, effect));
 
                     if (execute) {
-                        e.cast();
+                        e.on(Triggers.onCast);
                     } else {
                         aiScore += e.ai();
                     }

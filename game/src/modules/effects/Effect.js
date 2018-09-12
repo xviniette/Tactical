@@ -16,12 +16,7 @@ export default class Effect {
         this.duration = 0;
         this.delay = 0;
 
-        //Events
-        this.onCast = false;
-        this.onTargetStart = false;
-        this.onTargetEnd = false;
-        this.onSourceStart = false;
-        this.onSourceEnd = false;
+        this.triggers = [];
 
         var defaultData = this.constructor.defaultData();
         for (var attr in defaultData) {
@@ -41,55 +36,17 @@ export default class Effect {
         return {};
     }
 
+    on(trigger = null, callback = () => {}) {
+        if (this.triggers.includes(trigger)) {
+            return this.execute();
+        } else if (this[trigger]) {
+            return this[trigger]();
+        }
+
+        return false;
+    }
+
     execute(execute = true) {
-        return false;
-    }
-
-    cast() {
-        if (this.onCast) {
-            return this.execute();
-        }
-
-        return false;
-    }
-
-    remove() {
-        if (this.onRemove) {
-            return this.execute();
-        }
-
-        return false;
-    }
-
-    targetStart() {
-        if (this.onTargetStart) {
-            return this.execute();
-        }
-
-        return false;
-    }
-
-    targetEnd() {
-        if (this.onTargetEnd) {
-            return this.execute();
-        }
-
-        return false;
-    }
-
-    sourceStart() {
-        if (this.onSourceStart) {
-            return this.execute();
-        }
-
-        return false;
-    }
-
-    sourceEnd() {
-        if (this.onSourceEnd) {
-            return this.execute();
-        }
-
         return false;
     }
 

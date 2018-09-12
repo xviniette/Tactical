@@ -2,6 +2,7 @@
 
 import Effect from "./Effect.js"
 import GameEvent from "../GameEvent.js"
+import Triggers from "./Triggers.json"
 
 export default class Buff extends Effect {
     constructor(json) {
@@ -15,8 +16,9 @@ export default class Buff extends Effect {
         return {
             characteristic: null,
             value: 0,
-            duration: 0,
+            duration: 1,
             delay: 0,
+            triggers: [Triggers.onCast, Triggers.onTargetStart],
             onCast: true,
             onTargetStart: true
         }

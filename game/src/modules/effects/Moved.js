@@ -2,6 +2,7 @@
 
 import Effect from "./Effect.js"
 import GameEvent from "../GameEvent.js"
+import Triggers from "./Triggers.json"
 
 export default class Moved extends Effect {
     constructor(json) {
@@ -13,7 +14,7 @@ export default class Moved extends Effect {
             distance: 1,
             bySource: true,
             push: true,
-            onCast: true
+            triggers: [Triggers.onCast]
         }
     }
 
@@ -49,10 +50,17 @@ export default class Moved extends Effect {
                     }
                 }
 
-                GameEvent.send({ type: "moved", entity: data.target.id, x: data.target.x, y: data.target.y });
+                GameEvent.send({
+                    type: "moved",
+                    entity: data.target.id,
+                    x: data.target.x,
+                    y: data.target.y
+                });
             }
 
-            return { ai: 0 }
+            return {
+                ai: 0
+            }
         }
 
         return false;

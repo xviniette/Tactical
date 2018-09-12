@@ -2,6 +2,7 @@
 
 import Effect from "./Effect.js"
 import GameEvent from "../GameEvent.js"
+import Triggers from "./Triggers.json"
 
 export default class Heal extends Effect {
     constructor(json) {
@@ -11,7 +12,7 @@ export default class Heal extends Effect {
     static defaultData() {
         return {
             heal: 1,
-            onCast: true
+            triggers: [Triggers.onCast]
         }
     }
 
@@ -30,10 +31,17 @@ export default class Heal extends Effect {
                 data.target.currentCharacteristics.damageTaken -= heal;
                 data.target.getCharacteristics();
 
-                GameEvent.send({ type: "characteristic", entity: data.target.id, characteristic: "hp", value: heal });
+                GameEvent.send({
+                    type: "characteristic",
+                    entity: data.target.id,
+                    characteristic: "hp",
+                    value: heal
+                });
             }
 
-            return { ai: realDamage + 1000 + (realDamage >= targetCharacteristics.currentLife ? 9999999 : 0) }
+            return {
+                ai: realDamage + 1000 + (realDamage >= targetCharacteristics.currentLife ? 9999999 : 0)
+            }
         }
 
         return false;
