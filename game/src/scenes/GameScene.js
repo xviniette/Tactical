@@ -44,6 +44,9 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
+        this.cameras.main.setViewport(0, 0, this.sys.game.config.width, this.sys.game.config.height);
+        console.log(this.cameras.main);
+
         this.setGame();
         this.setGameRenderer();
 
@@ -305,6 +308,10 @@ export default class GameScene extends Phaser.Scene {
             return;
         }
 
+        this.ui.nbTurn = this.add.text(500, 550, "END TURN", {
+            color: "#ffff00"
+        }).setInteractive();
+
         this.ui.endTurn = this.add.text(500, 550, "END TURN", {
             color: "#ffff00"
         }).setInteractive();
@@ -461,6 +468,11 @@ export default class GameScene extends Phaser.Scene {
 
             this.setTiles();
         }
+
+        // console.log(this.cameras.main.width, this.cameras.main.height);
+    }
+
+    resize(){
     }
 
     action(x, y) {

@@ -83,6 +83,10 @@ export default class Effect {
             this.delay--;
             return false;
         }
+        
+        if(this.delay == 0){
+            this.on(Triggers.onStart);
+        }
 
         if (this.duration <= 0) {
             this.removeEffect();
