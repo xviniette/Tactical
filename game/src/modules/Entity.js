@@ -126,7 +126,7 @@ export default class Entity extends Element {
         GameEvent.send({
             type: "move",
             tile: tile,
-            entity: this.id
+            entity: this
         });
 
         return tile;

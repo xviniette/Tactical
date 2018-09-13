@@ -32,15 +32,17 @@ export default class Damage extends Effect {
                 data.target.currentCharacteristics.damageTaken += realDamage;
                 data.target.currentCharacteristics.erosionTaken += Math.floor(damage * targetCharacteristics.erosion / 100);
 
+                data.target.getCharacteristics();
+
                 GameEvent.send({
                     type: "characteristic",
                     x: data.cx,
                     y: data.cy,
                     entity: data.target,
                     characteristic: "hp",
-                    value: -realDamage
+                    value: -realDamage,
+                    characteristics: data.target.characteristics
                 });
-                data.target.getCharacteristics();
             }
 
             return {

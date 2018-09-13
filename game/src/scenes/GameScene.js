@@ -8,6 +8,13 @@ import assetFiles from "../assets.json";
 import jsonFight from "../fight.json";
 import spells from "../spells.json";
 
+import EntityObject from "./objects/EntityObject.js"
+import SpellsObject from "./objects/SpellsObject.js"
+import EndTurnObject from "./objects/EndTurnObject.js"
+import EffectObject from "./objects/EffectObject.js"
+
+import EventHandler from "./objects/EventHandler.js"
+
 export default class GameScene extends Phaser.Scene {
     constructor(config) {
         super({
@@ -35,10 +42,16 @@ export default class GameScene extends Phaser.Scene {
 
         this.fight;
         this.me = 0;
+
+
         this.selected = {
             spell: null,
             entity: null
         }
+
+        this.eventHandler = new EventHandler({
+            scene: this
+        });
 
         this.tweenHistoric = [];
     }
@@ -55,18 +68,8 @@ export default class GameScene extends Phaser.Scene {
         });
 
         document.addEventListener("GameEvent", (e) => {
-            this.eventHandler(e.detail);
+            this.eventHandler.on(e.detail);
         });
-    }
-
-    getBlockingDelay() {
-        var now = Date.now();
-        for (var i = this.tweenHistoric.length - 1; i >= 0; i--) {
-            if (this.tweenHistoric[i].blocking && this.tweenHistoric[i].endTimestamp > now) {
-                return this.tweenHistoric[i].endTimestamp - now;
-            }
-        }
-        return 0;
     }
 
     eventHandler(data = {}) {
@@ -217,6 +220,10 @@ export default class GameScene extends Phaser.Scene {
                     "mp": "#41f47a",
                 }
 
+                if (data.entity && data.characteristics) {
+                    data.entity.sprite.setCharacteristics(data.characteristics);
+                }
+
                 var position = this.getIsometricPosition(data.x, data.y);
 
                 var text = this.add.text(position.x, position.y - 80, data.value, {
@@ -308,48 +315,16 @@ export default class GameScene extends Phaser.Scene {
             return;
         }
 
-        this.ui.nbTurn = this.add.text(500, 550, "END TURN", {
-            color: "#ffff00"
-        }).setInteractive();
-
-        this.ui.endTurn = this.add.text(500, 550, "END TURN", {
-            color: "#ffff00"
-        }).setInteractive();
-
-        this.ui.endTurn.on('pointerdown', () => {
-            var entity = this.fight.getEntity(this.me);
-            if (entity) {
-                entity.endTurn();
-            }
+        this.ui.spells = new SpellsObject({
+            x: 200,
+            y: 500,
+            scene: this
         });
 
-        this.ui.spells = this.add.container();
-
-        this.fight.getEntity(this.me).spells.forEach((spell, index) => {
-            var s = this.add.container();
-            if(!spell.sprite){
-                spell.sprite = "spell";
-            }
-
-            s.icon = this.add.sprite(0, 0, spell.sprite).setInteractive();
-            s.add(s.icon);
-            s.icon.setOrigin(0.5, 0.5);
-            // var s = this.add.text(0 + index * 100, 550, spell.name, {
-            //     color: "#ffff00"
-            // }).setInteractive();
-            s.icon.spellId = spell.id;
-
-            s.x = index * 100;
-            s.y = 500;
-
-            var _this = this;
-
-            s.icon.on("pointerdown", function () {
-                _this.selected.spell = this.spellId;
-                _this.setTiles();
-            });
-
-            this.ui.spells.add(s);
+        this.ui.endTurn = new EndTurnObject({
+            x: 900,
+            y: 500,
+            scene: this
         });
     }
 
@@ -457,7 +432,15 @@ export default class GameScene extends Phaser.Scene {
         }
 
         this.fight.entities.forEach((entity) => {
-            entity.sprite = this.createIsometricSprite(entity.x, entity.y, entity.sprite);
+            var position = this.getIsometricPosition(entity.x, entity.y);
+            entity.sprite = new EntityObject({
+                scene: this,
+                x: position.x,
+                y: position.y,
+                entity: entity
+            });
+
+            entity.sprite.setScale(this.scaleValue);
         });
     }
 
@@ -470,9 +453,6 @@ export default class GameScene extends Phaser.Scene {
         }
 
         // console.log(this.cameras.main.width, this.cameras.main.height);
-    }
-
-    resize(){
     }
 
     action(x, y) {
@@ -491,6 +471,10 @@ export default class GameScene extends Phaser.Scene {
             });
             if (spell) {
                 spell.cast(x, y);
+
+                this.ui.spells.each((spell) => {
+                    spell.update();
+                });
             }
         } else {
             entity.move(x, y);
