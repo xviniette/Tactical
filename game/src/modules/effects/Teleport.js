@@ -23,8 +23,8 @@ export default class Jump extends Effect {
                 this.source.y = this.y;
 
                 GameEvent.send({
-                    type: "jump",
-                    entity: this.source.id,
+                    type: "teleport",
+                    entity: this.source,
                     x: this.source.x,
                     y: this.source.y
                 });

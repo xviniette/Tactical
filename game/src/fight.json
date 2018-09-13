@@ -34,7 +34,7 @@
                     ]
                 ],
                 "effects": [{
-                    "target":"castedCells",
+                    "target": "castedCells",
                     "effect": "teleport"
                 }]
             },
@@ -77,9 +77,14 @@
                     ]
                 ],
                 "effects": [{
-                    "effect": "damage",
-                    "damage": 10
-                }]
+                        "effect": "damage",
+                        "damage": 10
+                    },
+                    {
+                        "effect": "damage",
+                        "damage": 5
+                    }
+                ]
             }]
         },
         {

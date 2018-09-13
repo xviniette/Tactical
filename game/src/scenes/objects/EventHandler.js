@@ -1,3 +1,5 @@
+import COLORS from "../COLORS.json"
+
 export default class EventHandler {
     constructor(data = {}) {
         this.scene;
@@ -20,11 +22,15 @@ export default class EventHandler {
         }
     }
 
-    getDelay() {
+    getDelay(start = false) {
+        var attr = "end";
+        if (start) {
+            attr = "start";
+        }
         var now = Date.now();
         for (var i = this.delayManager.length - 1; i >= 0; i--) {
             if (this.delayManager[i].block && this.delayManager[i].end > now) {
-                return Math.max(0, this.delayManager[i].end - now);
+                return Math.max(0, this.delayManager[i][attr] - now);
             }
         }
         return 0;
@@ -41,7 +47,7 @@ export default class EventHandler {
 
     //Events
     move(data) {
-        var startDelay = this.getDelay();
+        var delay = this.getDelay();
         var tileDuration = 300;
 
         data.tile.path.forEach((t, index) => {
@@ -51,16 +57,126 @@ export default class EventHandler {
                 x: position.x,
                 y: position.y,
                 duration: tileDuration,
-                delay: tileDuration * index + startDelay
+                delay: tileDuration * index + delay
             });
         });
 
-        this.addDelay(data, startDelay, data.tile.path.length * tileDuration, true);
+        this.addDelay(data, delay, data.tile.path.length * tileDuration + 500, true);
     }
 
-    characteristic() {
+    textEffect(data = {}, delay = 0) {
+        var position = this.scene.getIsometricPosition(data.x, data.y);
+        var text = this.scene.add.text(position.x, position.y - 80, data.value, {
+            fontSize: "30px",
+            color: COLORS[data.characteristic] ? COLORS[data.characteristic] : "#FFFFFF",
+            stroke: "#FFFFFF",
+            strokeThickness: 5
+        }).setOrigin(0.5, 0.5).setVisible(false);
+
+
+        this.scene.tweens.add({
+            targets: text,
+            y: "-=30",
+            alpha: 0,
+            duration: 2000,
+            delay: delay,
+            onPlay() {
+                text.setVisible(true);
+            },
+            onComplete() {
+                text.destroy();
+            }
+        });
+
+        this.addDelay(data, delay, 2000);
+    }
+
+    characteristic(data) {
+        if (data.entity && data.characteristics) {
+            data.entity.sprite.setCharacteristics(data.characteristics);
+        }
+
+        var delay = 0;
+        var myDelays = this.delayManager;
+
+        for (var i = myDelays.length - 1; i >= 0; i--) {
+            if (myDelays[i].block) {
+                delay = myDelays[i].start - Date.now();
+                break;
+            }
+        }
+
+        //Multiple buff text
+        delay += (myDelays.length - i) * 1000 - 800;
+
+        this.textEffect(data, delay);
 
     }
 
+    cast(data) {
+        var position = this.scene.getIsometricPosition(data.x, data.y);
+        var text = this.scene.add.text(position.x, position.y - 80, data.spell.name, {
+            fontSize: "20px"
+        }).setOrigin(0.5, 0.5).setVisible(false);
+
+        var delay = this.getDelay();
+
+        this.scene.tweens.add({
+            targets: text,
+            y: "+=30",
+            duration: 3000,
+            delay: delay,
+            onPlay() {
+                text.setVisible(true);
+            },
+            onComplete() {
+                text.destroy();
+            }
+        });
+
+        var tiles = data.spell.getAoeTiles(data.sx, data.sy, data.x, data.y);
+
+        tiles.forEach((tile) => {
+            var position = this.scene.getIsometricPosition(tile.x, tile.y);
+            var graphics = this.scene.add.graphics().lineStyle(2, 0x0000000, 1).fillStyle(0xea1e1e).setAlpha(0.5).beginPath();
+            var tilesize = this.scene.tilesize;
+            graphics.moveTo(tilesize.x / 2, 0);
+            graphics.lineTo(0, tilesize.y / 2);
+            graphics.lineTo(-tilesize.x / 2, 0);
+            graphics.lineTo(0, -tilesize.y / 2);
+            graphics.closePath().strokePath().fillPath().setX(position.x).setY(position.y).setVisible(false);
+
+            this.scene.tweens.add({
+                targets: graphics,
+                alpha: 0,
+                duration: 3000,
+                ease: 'Sine.easeOut',
+                delay: delay,
+                onPlay() {
+                    graphics.setVisible(true);
+                },
+                onComplete() {
+                    graphics.destroy();
+                }
+            });
+        });
+
+        this.addDelay(data, delay, 2000, true);
+    }
+
+    teleport(data) {
+        console.log(data);
+        var delay = this.getDelay(true);
+        var position = this.scene.getIsometricPosition(data.x, data.y);
+
+        this.scene.tweens.add({
+            targets: data.entity.sprite,
+            x: position.x,
+            y: position.y,
+            ease: 'Expo.easeInOut',
+            delay: delay,
+            duration: 100,
+        });
+    }
 
 }
