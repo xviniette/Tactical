@@ -45,6 +45,12 @@
             "path": "./assets/spells/kick.png",
             "width": 104,
             "height": 104
+        },
+        "arrow": {
+            "path": "./assets/ui/Arrow-up.png"
+        },
+        "background": {
+            "path": "./assets/background.jpg"
         }
     }
 }

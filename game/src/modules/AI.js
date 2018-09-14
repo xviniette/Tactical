@@ -107,6 +107,8 @@ export default class AI extends Entity {
             this.move(movementScores[0].x, movementScores[0].y);
         }
 
-        this.endTurn();
+        setTimeout(() => {
+            this.endTurn();
+        }, 0);
     }
 }

@@ -15,19 +15,19 @@ const config = {
 
 const game = new Phaser.Game(config);
 
-function resize() {
-    var w = window.innerWidth;
-    var h = window.innerHeight;
+// function resize() {
+//     var w = window.innerWidth;
+//     var h = window.innerHeight;
 
-    game.resize(w, h);
-    game.scene.scenes.forEach(function (scene) {
-        if(scene.cameras.main){
-            scene.cameras.main.setViewport(0, 0, w, h);
-            scene.resize();
-        }
-    });
-}
+//     game.resize(w, h);
+//     game.scene.scenes.forEach(function (scene) {
+//         if(scene.cameras.main){
+//             scene.cameras.main.setViewport(0, 0, w, h);
+//             scene.resize();
+//         }
+//     });
+// }
 
-window.addEventListener('resize', resize);
-if (game.isBooted) resize();
-else game.events.once('boot', resize);
+// window.addEventListener('resize', resize);
+// if (game.isBooted) resize();
+// else game.events.once('boot', resize);

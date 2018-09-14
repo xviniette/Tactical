@@ -10,12 +10,15 @@
                 "name": "Taper",
                 "sprite": "spell_damage",
                 "minRange": 1,
-                "maxRange": 1,
+                "maxRange": 10,
                 "apCost": 3,
+                "los": false,
                 "aoe": [
-                    [
-                        1
-                    ]
+                    [0, 0, 1, 1, 0],
+                    [1, 0, 1, 0, 0],
+                    [1, 1, 1, 1, 1],
+                    [0, 0, 1, 0, 1],
+                    [1, 1, 1, 0, 1]
                 ],
                 "effects": [{
                     "effect": "damage",
@@ -27,10 +30,9 @@
                 "maxRange": 5,
                 "los": false,
                 "apCost": 3,
-                "freeCell": true,
                 "aoe": [
                     [
-                        1
+                        1, 1, 1
                     ]
                 ],
                 "effects": [{
@@ -57,6 +59,22 @@
                     "duration": 999999
                 }],
                 "cooldown": 2
+            },
+            {
+                "name": "Sauter",
+                "minRange": 1,
+                "maxRange": 5,
+                "los": false,
+                "apCost": 3,
+                "aoe": [
+                    [
+                        1
+                    ]
+                ],
+                "effects": [{
+                    "target": "entity",
+                    "effect": "moved"
+                }]
             }
         ]
     }],
@@ -94,14 +112,17 @@
             "y": 3,
             "sprite": "monster1",
             "spells": [{
-                "name": "Taper",
+                "name": "NAZIIIII§§§",
                 "minRange": 1,
-                "maxRange": 1,
+                "maxRange": 8,
                 "apCost": 3,
+                "los": false,
                 "aoe": [
-                    [
-                        1
-                    ]
+                    [1, 0, 1, 1, 1],
+                    [1, 0, 1, 0, 0],
+                    [1, 1, 1, 1, 1],
+                    [0, 0, 1, 0, 1],
+                    [1, 1, 1, 0, 1]
                 ],
                 "effects": [{
                     "effect": "damage",
@@ -113,7 +134,7 @@
     "map": {
         "tiles": [
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, -1, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 1, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],

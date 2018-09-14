@@ -24,6 +24,12 @@ export default class Fight extends Element {
     }
 
     start() {
+        this.orderEntities();
+
+        this.nextEntity();
+    }
+
+    orderEntities() {
         this.entities.forEach((entity) => {
             entity.getCharacteristics();
         });
@@ -31,8 +37,6 @@ export default class Fight extends Element {
         this.entities.sort((a, b) => {
             return b.characteristics.initiative - a.characteristics.initiative;
         });
-
-        this.nextEntity();
     }
 
     nextEntity() {
@@ -76,8 +80,10 @@ export default class Fight extends Element {
         });
     }
 
-    getAliveEntities(){
-        return this.entities.filter((e) => {return e.alive});
+    getAliveEntities() {
+        return this.entities.filter((e) => {
+            return e.alive
+        });
     }
 
     isOver() {
@@ -100,7 +106,7 @@ export default class Fight extends Element {
         };
     }
 
-    end(){
+    end() {
         console.log("FIN");
     }
 }

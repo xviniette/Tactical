@@ -52,7 +52,7 @@ export default class Moved extends Effect {
 
                 GameEvent.send({
                     type: "moved",
-                    entity: data.target.id,
+                    entity: data.target,
                     x: data.target.x,
                     y: data.target.y
                 });

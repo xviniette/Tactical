@@ -125,9 +125,10 @@ export default class Spell {
 
                 var distance = Math.round(Math.sqrt(Math.pow(i - centerX, 2) + Math.pow(j - centerY, 2)));
                 var oldAngle = Math.atan2(j - centerY, i - centerX);
+                var newAngle = oldAngle + angle;
 
-                var rotatedI = distance * Math.round(Math.cos(oldAngle + angle));
-                var rotatedJ = distance * Math.round(Math.sin(oldAngle + angle));
+                var rotatedI = Math.round(distance * Math.cos(newAngle));
+                var rotatedJ = Math.round(distance * Math.sin(newAngle));
 
                 var cx = x2 + rotatedI;
                 var cy = y2 + rotatedJ;

@@ -19,6 +19,19 @@ export default class Jump extends Effect {
     execute(execute = true) {
         if (this.target == null) {
             if (execute) {
+                var targetEntity = this.fight.map.getCellEntity(this.x, this.y);
+                if (targetEntity) {
+                    targetEntity.x = this.source.x;
+                    targetEntity.y = this.source.y;
+
+                    GameEvent.send({
+                        type: "teleport",
+                        entity: targetEntity,
+                        x: targetEntity.x,
+                        y: targetEntity.y
+                    });
+                }
+
                 this.source.x = this.x;
                 this.source.y = this.y;
 

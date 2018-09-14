@@ -26,6 +26,18 @@ export default class EntityObject extends Phaser.GameObjects.Container {
             color: "#23c90e"
         });
 
+        //ARROW
+        this.turnIndicator = this.scene.add.sprite(0, -250, "arrow").setOrigin(0.5, 1).setFlipY(true).setVisible(false);
+        this.scene.tweens.add({
+            targets: this.turnIndicator,
+            y: "+=30",
+            repeat:-1,
+            duration: 500,
+            yoyo:true,
+            ease:"Sine.easeInOut"
+        });
+        this.add(this.turnIndicator);
+
         this.setCharacteristics(config.entity.getCharacteristics());
         return this;
     }
@@ -37,7 +49,7 @@ export default class EntityObject extends Phaser.GameObjects.Container {
             strokeThickness: 20,
             stroke: "#FFFFFF"
         }, style));
-        
+
         text.setOrigin(0.5, 0.5);
         this.add(text);
 

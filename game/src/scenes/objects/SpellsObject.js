@@ -29,8 +29,8 @@ export default class SpellsObject extends Phaser.GameObjects.Container {
 
         entity.spells.forEach((spell, index) => {
             var spellObject = new SpellObject({
-                x: index * 200,
-                y: 100,
+                x: index * 100,
+                y: 0,
                 spell: spell,
                 scene: this.scene
             });

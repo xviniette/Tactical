@@ -57,17 +57,18 @@ export default class GameScene extends Phaser.Scene {
 
     create() {
         this.cameras.main.setViewport(0, 0, this.sys.game.config.width, this.sys.game.config.height);
-        console.log(this.cameras.main);
-
-        this.setGame();
-        this.setGameRenderer();
-
-        this.input.on('pointerdown', () => {
-            this.action(this.isoMouse.x, this.isoMouse.y);
-        });
 
         document.addEventListener("GameEvent", (e) => {
             this.eventHandler.on(e.detail);
+        });
+
+        this.setGame();
+        this.setGameRenderer();
+        this.fight.start();
+
+
+        this.input.on('pointerdown', () => {
+            this.action(this.isoMouse.x, this.isoMouse.y);
         });
     }
     
@@ -107,10 +108,10 @@ export default class GameScene extends Phaser.Scene {
             this.fight.entities.push(e);
         }
 
-        this.fight.start();
     }
 
     setGameRenderer() {
+        this.add.image(0, 0, "background").setScale(2.5);
         this.setWorld();
         this.setUI();
 
@@ -124,8 +125,8 @@ export default class GameScene extends Phaser.Scene {
         }
 
         this.ui.spells = new SpellsObject({
-            x: 200,
-            y: 500,
+            x: 75,
+            y: this.game.config.height - 75,
             scene: this
         });
 
@@ -228,6 +229,9 @@ export default class GameScene extends Phaser.Scene {
 
         for (var i = 0; i < this.fight.map.tiles.length; i++) {
             for (var j = 0; j < this.fight.map.tiles[i].length; j++) {
+                if(this.fight.map.tiles[i][j] == -1){
+                    continue;
+                }
                 var tile = this.createIsometricSprite(i, j, "tile0");
 
                 this.world.add(tile);

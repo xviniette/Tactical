@@ -10,19 +10,26 @@ export default class SpellObject extends Phaser.GameObjects.Container {
         this.spell = config.spell;
 
         //Background
-        this.spellSprite = this.scene.add.sprite(0, 0, this.spell.sprite ? this.spell.sprite : "spell");
-        this.spellSprite.setOrigin(0.5, 1);
+        this.spellSprite = this.scene.add.sprite(0, 0, this.spell.sprite ? this.spell.sprite : "spell").setDisplaySize(75, 75);
+        this.spellSprite.setOrigin(0.5, 0.5);
         this.spellSprite.spell = this.spell;
         this.add(this.spellSprite);
-        this.spellSprite.setInteractive();
+        this.spellSprite.setInteractive({ useHandCursor: true });
+
+        console.log(this.spellSprite);
 
         //APCOST
-        this.apCost = this.scene.add.text(0, -this.spellSprite.height, this.spell.apCost, {
-            color: COLORS.AP,
+        this.graphics = this.scene.add.graphics();
+        this.graphics.fillStyle(0x4295f4, 0.8);
+        this.graphics.fillCircle(0, 75/2, 15);
+        this.add(this.graphics);
+
+        this.apCost = this.scene.add.text(0, 75/2, this.spell.apCost, {
+            color: "#FFFFFF",
             fontSize: 30
         });
 
-        this.apCost.setOrigin(0.5, 1);
+        this.apCost.setOrigin(0.5, 0.5);
 
         this.add(this.apCost);
 
