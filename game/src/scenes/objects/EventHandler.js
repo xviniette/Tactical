@@ -82,6 +82,7 @@ export default class EventHandler {
             delay: delay,
             onPlay() {
                 text.setVisible(true);
+
             },
             onComplete() {
                 text.destroy();
@@ -92,10 +93,6 @@ export default class EventHandler {
     }
 
     characteristic(data) {
-        if (data.entity && data.characteristics) {
-            data.entity.sprite.setCharacteristics(data.characteristics);
-        }
-
         var delay = 0;
         var myDelays = this.delayManager;
 
@@ -105,6 +102,15 @@ export default class EventHandler {
                 break;
             }
         }
+
+        this.scene.time.addEvent({
+            delay: delay,
+            callback() {
+                if (data.characteristics && data.entity && data.entity.sprite) {
+                    data.entity.sprite.setCharacteristics(data.characteristics);
+                }
+            }
+        });
 
         var d = myDelays.slice(i).filter((delay) => {
             return delay.data.entity.id == data.entity.id
@@ -130,17 +136,21 @@ export default class EventHandler {
 
         var delay = this.getDelay();
 
+        var spellSprite = this.scene.add.sprite(position.x, position.y - 100, "spell").setOrigin(0.5, 1).setVisible(false).setDisplaySize(50, 50);
+
         this.scene.tweens.add({
-            targets: text,
+            targets: [text, spellSprite],
             y: "+=30",
             alpha: 0,
             duration: 3000,
             delay: delay,
             onPlay() {
                 text.setVisible(true);
+                spellSprite.setVisible(true);
             },
             onComplete() {
                 text.destroy();
+                spellSprite.destroy();
             }
         });
 

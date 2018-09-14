@@ -16,8 +16,6 @@ export default class SpellObject extends Phaser.GameObjects.Container {
         this.add(this.spellSprite);
         this.spellSprite.setInteractive({ useHandCursor: true });
 
-        console.log(this.spellSprite);
-
         //APCOST
         this.graphics = this.scene.add.graphics();
         this.graphics.fillStyle(0x4295f4, 0.8);

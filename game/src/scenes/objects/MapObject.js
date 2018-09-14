@@ -49,8 +49,6 @@ export default class EndTurn extends Phaser.GameObjects.Container {
     setCharacteristics(characteristics) {
         this.characteristics = characteristics;
 
-        console.log(this.characteristics);
-
         this.life.setText(this.characteristics.currentLife);
         this.ap.setText(this.characteristics.ap);
         this.mp.setText(this.characteristics.mp);

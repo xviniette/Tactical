@@ -18,14 +18,6 @@ export default class EntityObject extends Phaser.GameObjects.Container {
             color: "#D30A0A"
         });
 
-        this.ap = this.addText(-100, 0, {
-            color: "#0e8bc9"
-        });
-
-        this.mp = this.addText(100, 0, {
-            color: "#23c90e"
-        });
-
         //ARROW
         this.turnIndicator = this.scene.add.sprite(0, -250, "arrow").setOrigin(0.5, 1).setFlipY(true).setVisible(false);
         this.scene.tweens.add({
@@ -59,10 +51,6 @@ export default class EntityObject extends Phaser.GameObjects.Container {
     setCharacteristics(characteristics) {
         this.characteristics = characteristics;
 
-        console.log(this.characteristics);
-
         this.life.setText(this.characteristics.currentLife);
-        this.ap.setText(this.characteristics.ap);
-        this.mp.setText(this.characteristics.mp);
     }
 }
