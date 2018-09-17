@@ -71,7 +71,7 @@ export default class GameScene extends Phaser.Scene {
             this.action(this.isoMouse.x, this.isoMouse.y);
         });
     }
-    
+
     setGame() {
         this.fight = new Fight({
             scene: this
@@ -229,7 +229,7 @@ export default class GameScene extends Phaser.Scene {
 
         for (var i = 0; i < this.fight.map.tiles.length; i++) {
             for (var j = 0; j < this.fight.map.tiles[i].length; j++) {
-                if(this.fight.map.tiles[i][j] == -1){
+                if (this.fight.map.tiles[i][j] == -1) {
                     continue;
                 }
                 var tile = this.createIsometricSprite(i, j, "tile0");
@@ -282,14 +282,17 @@ export default class GameScene extends Phaser.Scene {
                 return spell.id == this.selected.spell;
             });
             if (spell) {
-                spell.cast(x, y);
+                entity.trigger("cast", {spell:spell.id, x:x, y:y});
 
                 this.ui.spells.each((spell) => {
                     spell.update();
                 });
             }
         } else {
-            entity.move(x, y);
+            entity.trigger("move", {
+                x: x,
+                y: y
+            });
         }
 
         this.selected.spell = null;

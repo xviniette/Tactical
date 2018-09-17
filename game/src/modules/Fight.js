@@ -18,7 +18,7 @@ export default class Fight extends Element {
 
         this.effects = [];
 
-        this.scene;
+        this.isServer = false;
 
         this.init(json)
     }

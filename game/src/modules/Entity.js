@@ -83,30 +83,62 @@ export default class Entity extends Element {
         return characteristics;
     }
 
-    cast(spellId, x, y) {
+    trigger(func = "", params = {}, callback = () => {}) {
+        if (!this.fight.isServer) {
+            GameEvent.send({
+                type: "trigger",
+                entity: this,
+                func,
+                params,
+                callback
+            });
+        } else {
+            if (this[func]) {
+                this[func](params);
+                callback();
+            }
+        }
+    }
+
+    cast(d = {}) {
+        var data = {
+            spell: null,
+            x: 0,
+            y: 0
+        }
+
+        Object.assign(data, d);
+
         if (!this.myTurn()) {
             return false;
         }
 
         var spell = this.spells.find((s) => {
-            return s.id == spellId;
+            return s.id == data.spell;
         });
 
         if (spell) {
-            spell.cast(x, y);
+            spell.cast(data.x, data.y);
         }
 
         return false;
     }
 
-    move(x, y) {
+    move(d = {}) {
+        var data = {
+            x: 0,
+            y: 0
+        }
+
+        Object.assign(data, d);
+
         if (!this.myTurn()) {
             return false;
         }
 
         var moveTiles = this.getMovementTiles();
         var tile = moveTiles.find((t) => {
-            return t.x == x && t.y == y;
+            return t.x == data.x && t.y == data.y;
         });
 
         if (!tile) {
@@ -277,6 +309,7 @@ export default class Entity extends Element {
     }
 
     endTurn() {
+        console.log("chips");
         if (this.myTurn()) {
             this.fight.effects.filter((e) => {
                 return e.target != undefined && e.target.id == this.id

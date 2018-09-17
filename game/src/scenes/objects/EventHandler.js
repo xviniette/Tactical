@@ -6,6 +6,8 @@ export default class EventHandler {
 
         this.delayManager = [];
 
+        this.timeWait = 0;
+
         this.init(data);
     }
 
@@ -22,6 +24,18 @@ export default class EventHandler {
         }
     }
 
+    trigger(data) {
+        console.log("delay", Math.max(0, this.timeWait - Date.now()));
+        this.scene.time.addEvent({
+            delay: Math.max(0, this.timeWait - Date.now()),
+            callback() {
+                console.log("EXECUTE");
+                data.entity[data.func](data.params);
+                data.callback();
+            }
+        });
+    }
+
     getDelay(start = false) {
         var attr = "end";
         if (start) {
@@ -36,18 +50,8 @@ export default class EventHandler {
         return 0;
     }
 
-    addDelay(data = {}, start = 0, duration = 0, block = false) {
-        this.delayManager.push({
-            data: data,
-            start: Date.now() + start,
-            end: Date.now() + start + duration,
-            block: block
-        });
-    }
-
     //Events
     move(data) {
-        var delay = this.getDelay();
         var tileDuration = 300;
 
         data.tile.path.forEach((t, index) => {
@@ -57,11 +61,11 @@ export default class EventHandler {
                 x: position.x,
                 y: position.y,
                 duration: tileDuration,
-                delay: tileDuration * index + delay
+                delay: index * tileDuration
             });
         });
 
-        this.addDelay(data, delay, data.tile.path.length * tileDuration + 500, true);
+        this.timeWait = Date.now() + data.tile.path.length * tileDuration;
     }
 
     textEffect(data = {}, delay = 0) {
@@ -88,8 +92,6 @@ export default class EventHandler {
                 text.destroy();
             }
         });
-
-        this.addDelay(data, delay, 2000);
     }
 
     characteristic(data) {
@@ -134,8 +136,6 @@ export default class EventHandler {
             strokeThickness: 5
         }).setOrigin(0.5, 0.5).setVisible(false);
 
-        var delay = this.getDelay();
-
         var spellSprite = this.scene.add.sprite(position.x, position.y - 100, "spell").setOrigin(0.5, 1).setVisible(false).setDisplaySize(50, 50);
 
         this.scene.tweens.add({
@@ -143,7 +143,6 @@ export default class EventHandler {
             y: "+=30",
             alpha: 0,
             duration: 3000,
-            delay: delay,
             onPlay() {
                 text.setVisible(true);
                 spellSprite.setVisible(true);
@@ -171,7 +170,6 @@ export default class EventHandler {
                 alpha: 0,
                 duration: 3000,
                 ease: 'Sine.easeOut',
-                delay: delay,
                 onPlay() {
                     graphics.setVisible(true);
                 },
@@ -181,7 +179,7 @@ export default class EventHandler {
             });
         });
 
-        this.addDelay(data, delay, 2000, true);
+        this.timeWait = Date.now() + 2000;
     }
 
     teleport(data) {
