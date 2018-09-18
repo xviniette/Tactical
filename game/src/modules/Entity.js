@@ -83,18 +83,19 @@ export default class Entity extends Element {
         return characteristics;
     }
 
-    trigger(func = "", params = {}, callback = () => {}) {
+    trigger(action = null, params = {}, callback = () => {}) {
+        console.log("ACTION", action);
         if (!this.fight.isServer) {
             GameEvent.send({
                 type: "trigger",
                 entity: this,
-                func,
+                action,
                 params,
                 callback
             });
         } else {
-            if (this[func]) {
-                this[func](params);
+            if (this[action]) {
+                this[action](params);
                 callback();
             }
         }
@@ -118,7 +119,7 @@ export default class Entity extends Element {
         });
 
         if (spell) {
-            spell.cast(data.x, data.y);
+            return spell.cast(data.x, data.y);
         }
 
         return false;
@@ -309,7 +310,6 @@ export default class Entity extends Element {
     }
 
     endTurn() {
-        console.log("chips");
         if (this.myTurn()) {
             this.fight.effects.filter((e) => {
                 return e.target != undefined && e.target.id == this.id
@@ -326,6 +326,13 @@ export default class Entity extends Element {
             this.currentCharacteristics.usedAP = 0;
             this.currentCharacteristics.usedMP = 0;
             this.getCharacteristics();
+
+            GameEvent.send({
+                type: "endTurn",
+                entity: this
+            });
+
+
             this.fight.nextEntity();
             return true;
         }

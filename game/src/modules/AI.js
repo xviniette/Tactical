@@ -13,6 +13,7 @@ export default class AI extends Entity {
 
     play() {
         console.log("AI");
+        console.log("position", this.x, this.y);
         //CAST LOOP
         var castables = [];
 
@@ -58,22 +59,23 @@ export default class AI extends Entity {
 
             var cast = castables[0];
 
+            var _this = this;
+
             this.trigger("move", {
                 x: cast.movementTile.x,
                 y: cast.movementTile.y,
+            });
+
+
+            this.trigger("cast", {
+                spell: cast.spell.id,
+                x: cast.x,
+                y: cast.y
             }, () => {
-                this.trigger("cast", {
-                    spell: cast.spell.id,
-                    x: cast.x,
-                    y: cast.y
-                }, () => {
-                    this.play();
-                });
+                _this.play();
             });
             return;
         }
-
-        console.log("PLEASE ??");
 
         //MOVEMENT LEFT
         var movementTiles = this.getMovementTiles(true);

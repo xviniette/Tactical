@@ -282,7 +282,11 @@ export default class GameScene extends Phaser.Scene {
                 return spell.id == this.selected.spell;
             });
             if (spell) {
-                entity.trigger("cast", {spell:spell.id, x:x, y:y});
+                entity.trigger("cast", {
+                    spell: spell.id,
+                    x: x,
+                    y: y
+                });
 
                 this.ui.spells.each((spell) => {
                     spell.update();

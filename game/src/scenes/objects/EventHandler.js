@@ -6,7 +6,7 @@ export default class EventHandler {
 
         this.delayManager = [];
 
-        this.timeWait = 0;
+        this.triggers = [];
 
         this.init(data);
     }
@@ -25,15 +25,30 @@ export default class EventHandler {
     }
 
     trigger(data) {
-        console.log("delay", Math.max(0, this.timeWait - Date.now()));
-        this.scene.time.addEvent({
-            delay: Math.max(0, this.timeWait - Date.now()),
-            callback() {
-                console.log("EXECUTE");
-                data.entity[data.func](data.params);
-                data.callback();
-            }
-        });
+        this.triggers.push(data);
+        console.log(this.triggers);
+        if (this.triggers.length == 1) {
+            this.executeTrigger();
+        }
+    }
+
+    executeTrigger() {
+        if (this.triggers.length == 0) {
+            return;
+        }
+
+        var d = this.triggers[0];
+
+        var res = d.entity[d.action](d.params);
+        d.callback();
+        if (res === false) {
+            this.nextTrigger();
+        }
+    }
+
+    nextTrigger() {
+        this.triggers.splice(0, 1);
+        this.executeTrigger();
     }
 
     getDelay(start = false) {
@@ -65,7 +80,19 @@ export default class EventHandler {
             });
         });
 
-        this.timeWait = Date.now() + data.tile.path.length * tileDuration;
+
+        var _this = this;
+        this.scene.time.addEvent({
+            delay: data.tile.path.length * tileDuration,
+            callback() {
+                _this.nextTrigger();
+            }
+        });
+
+    }
+
+    endTurn(){
+        this.nextTrigger();
     }
 
     textEffect(data = {}, delay = 0) {
@@ -179,7 +206,13 @@ export default class EventHandler {
             });
         });
 
-        this.timeWait = Date.now() + 2000;
+        var _this = this;
+        this.scene.time.addEvent({
+            delay: 800,
+            callback() {
+                _this.nextTrigger();
+            }
+        });
     }
 
     teleport(data) {
