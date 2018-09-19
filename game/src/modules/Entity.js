@@ -84,7 +84,6 @@ export default class Entity extends Element {
     }
 
     trigger(action = null, params = {}, callback = () => {}) {
-        console.log("ACTION", action);
         if (!this.fight.isServer) {
             GameEvent.send({
                 type: "trigger",
@@ -289,8 +288,7 @@ export default class Entity extends Element {
 
     startTurn() {
         GameEvent.send({
-            type: "turn",
-            turn: this.fight.turn,
+            type: "startTurn",
             entity: this
         });
 
@@ -338,5 +336,30 @@ export default class Entity extends Element {
         }
 
         return false;
+    }
+
+    pathfinding(x, y) {
+        var openList = [];
+        var closeList = {};
+
+        openList.push({
+            x: x,
+            y: y,
+            f: 0
+        });
+
+        while (openList.length != 0) {
+            var q = openList.sort((a, b) => {
+                return b.f - a.f
+            });
+
+            this.openList.splice(0, 1);
+
+            for (var angle = 0; i < Math.PI * 2; i += Math.PI / 2) {
+                
+            }
+
+
+        }
     }
 }

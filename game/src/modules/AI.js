@@ -12,9 +12,6 @@ export default class AI extends Entity {
     }
 
     play() {
-        console.log("AI");
-        console.log("position", this.x, this.y);
-        //CAST LOOP
         var castables = [];
 
         var movementTiles = this.getMovementTiles(true);
@@ -24,7 +21,6 @@ export default class AI extends Entity {
             if (!(spell.canUse() && spell.checkCooldown())) {
                 continue;
             }
-
 
             for (var movementTile of movementTiles) {
                 if (!spell.canUse(characteristics.ap - movementTile.usedAP, characteristics.mp - movementTile.usedMP)) {

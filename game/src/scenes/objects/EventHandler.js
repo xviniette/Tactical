@@ -8,6 +8,10 @@ export default class EventHandler {
 
         this.triggers = [];
 
+        this.characteristicsDelay = {
+            //entityId:timestamp last
+        }
+
         this.init(data);
     }
 
@@ -18,7 +22,6 @@ export default class EventHandler {
     }
 
     on(event) {
-        console.log(event);
         if (this[event.type]) {
             this[event.type](event);
         }
@@ -26,7 +29,6 @@ export default class EventHandler {
 
     trigger(data) {
         this.triggers.push(data);
-        console.log(this.triggers);
         if (this.triggers.length == 1) {
             this.executeTrigger();
         }
@@ -49,20 +51,6 @@ export default class EventHandler {
     nextTrigger() {
         this.triggers.splice(0, 1);
         this.executeTrigger();
-    }
-
-    getDelay(start = false) {
-        var attr = "end";
-        if (start) {
-            attr = "start";
-        }
-        var now = Date.now();
-        for (var i = this.delayManager.length - 1; i >= 0; i--) {
-            if (this.delayManager[i].block && this.delayManager[i].end > now) {
-                return Math.max(0, this.delayManager[i][attr] - now);
-            }
-        }
-        return 0;
     }
 
     //Events
@@ -91,7 +79,7 @@ export default class EventHandler {
 
     }
 
-    endTurn(){
+    endTurn() {
         this.nextTrigger();
     }
 
@@ -122,35 +110,17 @@ export default class EventHandler {
     }
 
     characteristic(data) {
-        var delay = 0;
-        var myDelays = this.delayManager;
 
-        for (var i = myDelays.length - 1; i >= 0; i--) {
-            if (myDelays[i].block) {
-                delay = myDelays[i].start - Date.now();
-                break;
-            }
+        var executeTime;
+        if (this.characteristicsDelay[data.entity.id] && this.characteristicsDelay[data.entity.id] > Date.now()) {
+            executeTime = this.characteristicsDelay[data.entity.id] + 800;
+        }else{
+            executeTime = Date.now() + 200;
         }
 
-        this.scene.time.addEvent({
-            delay: delay,
-            callback() {
-                if (data.characteristics && data.entity && data.entity.sprite) {
-                    data.entity.sprite.setCharacteristics(data.characteristics);
-                }
-            }
-        });
+        this.characteristicsDelay[data.entity.id] = executeTime;
 
-        var d = myDelays.slice(i).filter((delay) => {
-            return delay.data.entity.id == data.entity.id
-        });
-
-
-
-        //Multiple buff text
-        delay += d.length * 1000 + 250;
-
-        this.textEffect(data, delay);
+        this.textEffect(data, executeTime - Date.now());
 
     }
 
@@ -208,7 +178,7 @@ export default class EventHandler {
 
         var _this = this;
         this.scene.time.addEvent({
-            delay: 800,
+            delay: 1500,
             callback() {
                 _this.nextTrigger();
             }
@@ -216,7 +186,6 @@ export default class EventHandler {
     }
 
     teleport(data) {
-        var delay = this.getDelay(true);
         var position = this.scene.getIsometricPosition(data.x, data.y);
 
         this.scene.tweens.add({
@@ -224,13 +193,11 @@ export default class EventHandler {
             x: position.x,
             y: position.y,
             ease: 'Expo.easeInOut',
-            delay: delay,
             duration: 100,
         });
     }
 
     moved(data) {
-        var delay = this.getDelay(true);
         var position = this.scene.getIsometricPosition(data.x, data.y);
 
         this.scene.tweens.add({
@@ -238,28 +205,15 @@ export default class EventHandler {
             x: position.x,
             y: position.y,
             ease: 'Expo.easeInOut',
-            delay: delay,
             duration: 200,
         });
     }
 
-    turn(data) {
-        var delay = this.getDelay();
-
-        var f = (() => {
-            return () => {
-                var d = data;
-                this.scene.fight.entities.forEach((entity) => {
-                    entity.sprite.turnIndicator.setVisible(false);
-                });
-
-                d.entity.sprite.turnIndicator.setVisible(true);
-            }
-        })();
-
-        this.scene.time.addEvent({
-            delay: delay,
-            callback: f
+    startTurn(data) {
+        this.scene.fight.entities.forEach((entity) => {
+            entity.sprite.turnIndicator.setVisible(false);
         });
+
+        data.entity.sprite.turnIndicator.setVisible(true);
     }
 }

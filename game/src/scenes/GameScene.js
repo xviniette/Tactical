@@ -263,8 +263,6 @@ export default class GameScene extends Phaser.Scene {
 
             this.setTiles();
         }
-
-        // console.log(this.cameras.main.width, this.cameras.main.height);
     }
 
     action(x, y) {
