@@ -12,9 +12,10 @@ export default class AI extends Entity {
     }
 
     play() {
+        console.log("AI TURN")
         var castables = [];
 
-        var movementTiles = this.getMovementTiles(true);
+        var movementTiles = this.getAccessibleMovementTiles(true);
         var characteristics = this.getCharacteristics();
 
         for (var spell of this.spells) {
@@ -74,7 +75,7 @@ export default class AI extends Entity {
         }
 
         //MOVEMENT LEFT
-        var movementTiles = this.getMovementTiles(true);
+        var movementTiles = this.getAccessibleMovementTiles(true);
         var movementScores = [];
 
         movementTiles.forEach(tile => {
@@ -84,15 +85,21 @@ export default class AI extends Entity {
                 score -= tile.usedAP + tile.usedMP;
             }
 
+            var pathfinding = this.getMovementTiles(false, tile.x, tile.y, true);
+
             this.fight.getAliveEntities().filter((entity) => {
                 return entity.team != this.team
             }).forEach((entity) => {
+                var distance = pathfinding.find((t) => {
+                    return t.x == entity.x && t.y == entity.y
+                }).usedMP;
+
                 if (this.aggressive) {
-                    score += Math.pow(100 - (Math.abs(entity.x - tile.x) + Math.abs(entity.y - tile.y)), 3);
+                    score += Math.pow(100 - distance, 3);
                 } else {
-                    score += Math.pow(Math.abs(entity.x - tile.x) + Math.abs(entity.y - tile.y), 3);
+                    score += Math.pow(distance, 3);
                     if (!this.fight.map.inLineOfSight(tile.x, tile.y, entity.x, entity.y)) {
-                        score += 100;
+                        score += distance;
                     }
                 }
             });

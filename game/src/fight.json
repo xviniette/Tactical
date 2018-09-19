@@ -111,6 +111,7 @@
             "x": 3,
             "y": 3,
             "sprite": "monster1",
+            "aggressive": false,
             "spells": [{
                 "name": "NAZIIIII§§§",
                 "minRange": 1,

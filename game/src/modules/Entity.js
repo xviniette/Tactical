@@ -136,16 +136,12 @@ export default class Entity extends Element {
             return false;
         }
 
-        var moveTiles = this.getMovementTiles();
+        var moveTiles = this.getAccessibleMovementTiles();
         var tile = moveTiles.find((t) => {
             return t.x == data.x && t.y == data.y;
         });
 
         if (!tile) {
-            return false;
-        }
-
-        if (!tile.reachable) {
             return false;
         }
 
@@ -164,13 +160,17 @@ export default class Entity extends Element {
         return tile;
     }
 
-    getMovementTiles(needStartTile = false) {
+    getMovementTiles(needStartTile = false, x = null, y = null, calcDistance = false) {
         var characteristics = this.getCharacteristics();
-        var MP = characteristics.mp;
+        var MP = calcDistance ? 999999999 : characteristics.mp;
         var AP = characteristics.ap;
+        var DODGE = calcDistance ? 999999999 : characteristics.dodge;
         var tiles = [];
         var mapTiles = this.fight.map.tiles;
         var toProcess = [];
+
+        var startX = x || this.x;
+        var startY = y || this.y;
 
         var getDodgeLoss = (x, y) => {
             var left = 1;
@@ -178,7 +178,7 @@ export default class Entity extends Element {
             this.fight.map.getEntitiesAround(x, y).filter((e) => {
                 return e.team != this.team
             }).forEach((e) => {
-                left *= Math.max(0, Math.min(1, (characteristics.dodge + 2) / (2 * (e.getCharacteristics().lock + 2))));
+                left *= Math.max(0, Math.min(1, (DODGE + 2) / (2 * (e.getCharacteristics().lock + 2))));
             });
 
             return Math.min(1, Math.max(0, 1 - left));
@@ -203,7 +203,7 @@ export default class Entity extends Element {
                 }
 
                 // //Entity on tile
-                if (this.fight.map.getCellEntity(tile.x, tile.y)) {
+                if (!calcDistance && this.fight.map.getCellEntity(tile.x, tile.y)) {
                     continue;
                 }
 
@@ -250,11 +250,12 @@ export default class Entity extends Element {
         }
 
         var startTile = {
-            x: this.x,
-            y: this.y,
+            x: startX,
+            y: startY,
             path: [],
             usedMP: 0,
             usedAP: 0,
+            reachable: true,
             loss: getDodgeLoss(this.x, this.y)
         };
 
@@ -270,6 +271,12 @@ export default class Entity extends Element {
         }
 
         return tiles;
+    }
+
+    getAccessibleMovementTiles(needStartTile = false, x = null, y = null, calcDistance = false) {
+        return this.getMovementTiles(needStartTile, x, y, calcDistance).filter(tile => {
+            return tile.reachable;
+        });
     }
 
     die() {
@@ -336,30 +343,5 @@ export default class Entity extends Element {
         }
 
         return false;
-    }
-
-    pathfinding(x, y) {
-        var openList = [];
-        var closeList = {};
-
-        openList.push({
-            x: x,
-            y: y,
-            f: 0
-        });
-
-        while (openList.length != 0) {
-            var q = openList.sort((a, b) => {
-                return b.f - a.f
-            });
-
-            this.openList.splice(0, 1);
-
-            for (var angle = 0; i < Math.PI * 2; i += Math.PI / 2) {
-                
-            }
-
-
-        }
     }
 }
