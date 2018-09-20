@@ -38,8 +38,6 @@ export default class Spell {
         this.cooldown = 0;
         this.initialCooldown = 0;
 
-        this.incompatibleSpells = [];
-
         this.effects = [];
 
         this.historic = [];

@@ -7,6 +7,8 @@ export default class EntityObject extends Phaser.GameObjects.Container {
         this.scene = config.scene;
         this.scene.add.existing(this);
 
+        this.entity = config.entity;
+        
         //SPRITE
         this.entitySprite = this.scene.add.sprite(0, 0, config.entity.sprite);
         var assetData = assetFiles.image[config.entity.sprite];
@@ -23,14 +25,14 @@ export default class EntityObject extends Phaser.GameObjects.Container {
         this.scene.tweens.add({
             targets: this.turnIndicator,
             y: "+=30",
-            repeat:-1,
+            repeat: -1,
             duration: 500,
-            yoyo:true,
-            ease:"Sine.easeInOut"
+            yoyo: true,
+            ease: "Sine.easeInOut"
         });
         this.add(this.turnIndicator);
 
-        this.setCharacteristics(config.entity.getCharacteristics());
+        this.updateCharacteristics();
         return this;
     }
 
@@ -48,8 +50,14 @@ export default class EntityObject extends Phaser.GameObjects.Container {
         return text;
     }
 
-    setCharacteristics(characteristics) {
-        this.characteristics = characteristics;
+    updateCharacteristics() {
+        this.characteristics = this.entity.getCharacteristics();
+
+        if(this.characteristics.currentLife <= 0){
+            this.visible = false;
+        }else{
+            this.visible = true;
+        }
 
         this.life.setText(this.characteristics.currentLife);
     }

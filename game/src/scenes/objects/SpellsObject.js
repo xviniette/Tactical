@@ -34,7 +34,7 @@ export default class SpellsObject extends Phaser.GameObjects.Container {
                 spell: spell,
                 scene: this.scene
             });
-
+      
             this.add(spellObject);
         });
     }

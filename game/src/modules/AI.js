@@ -95,14 +95,15 @@ export default class AI extends Entity {
                 }).usedMP;
 
                 if (this.aggressive) {
-                    score += Math.pow(100 - distance, 3);
+                    score += Math.pow(50 - distance, 4);
                 } else {
-                    score += Math.pow(distance, 3);
+                    score += Math.pow(distance, 4);
                     if (!this.fight.map.inLineOfSight(tile.x, tile.y, entity.x, entity.y)) {
                         score += distance;
                     }
                 }
             });
+
 
             movementScores.push({
                 x: tile.x,

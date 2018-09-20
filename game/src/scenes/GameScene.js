@@ -11,6 +11,7 @@ import spells from "../spells.json";
 import EntityObject from "./objects/EntityObject.js"
 import SpellsObject from "./objects/SpellsObject.js"
 import EndTurnObject from "./objects/EndTurnObject.js"
+import SpellInfo from "./objects/SpellInfo.js"
 
 import EventHandler from "./objects/EventHandler.js"
 
@@ -123,6 +124,16 @@ export default class GameScene extends Phaser.Scene {
         if (!me) {
             return;
         }
+
+        this.ui.spellsInfo = {};
+        me.spells.forEach(spell => {
+            this.ui.spellsInfo[spell.id] = new SpellInfo({
+                x: this.game.config.width / 2 - 150,
+                y: this.game.config.height / 2 - 200,
+                spell: spell,
+                scene: this
+            });
+        });
 
         this.ui.spells = new SpellsObject({
             x: 75,

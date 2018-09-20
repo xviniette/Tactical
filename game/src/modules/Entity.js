@@ -22,7 +22,7 @@ export default class Entity extends Element {
         this.defaultCharacteristics = {
             ap: 6,
             mp: 6,
-            life: 1000000,
+            life: 100,
             erosion: 10,
             initiative: 0,
             power: 0,

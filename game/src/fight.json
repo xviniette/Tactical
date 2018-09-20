@@ -12,14 +12,10 @@
                 "minRange": 1,
                 "maxRange": 10,
                 "apCost": 3,
-                "los": false,
                 "aoe": [
-                    [0, 0, 1, 1, 0],
-                    [1, 0, 1, 0, 0],
-                    [1, 1, 1, 1, 1],
-                    [0, 0, 1, 0, 1],
-                    [1, 1, 1, 0, 1]
+                    [1]
                 ],
+                "cooldown": 1,
                 "effects": [{
                     "effect": "damage",
                     "damage": 10
@@ -109,6 +105,9 @@
             "name": "Loup",
             "team": 2,
             "x": 3,
+            "defaultCharacteristics": {
+                "initiative": 80
+            },
             "y": 3,
             "sprite": "monster1",
             "aggressive": false,

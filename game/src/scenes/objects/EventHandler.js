@@ -80,6 +80,7 @@ export default class EventHandler {
     }
 
     endTurn() {
+        console.log("END TURN")
         this.nextTrigger();
     }
 
@@ -110,13 +111,14 @@ export default class EventHandler {
     }
 
     characteristic(data) {
-
         var executeTime;
         if (this.characteristicsDelay[data.entity.id] && this.characteristicsDelay[data.entity.id] > Date.now()) {
             executeTime = this.characteristicsDelay[data.entity.id] + 800;
         }else{
             executeTime = Date.now() + 200;
         }
+
+        data.entity.sprite.updateCharacteristics();
 
         this.characteristicsDelay[data.entity.id] = executeTime;
 

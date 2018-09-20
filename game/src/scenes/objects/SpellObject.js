@@ -14,15 +14,17 @@ export default class SpellObject extends Phaser.GameObjects.Container {
         this.spellSprite.setOrigin(0.5, 0.5);
         this.spellSprite.spell = this.spell;
         this.add(this.spellSprite);
-        this.spellSprite.setInteractive({ useHandCursor: true });
+        this.spellSprite.setInteractive({
+            useHandCursor: true
+        });
 
         //APCOST
         this.graphics = this.scene.add.graphics();
         this.graphics.fillStyle(0x4295f4, 0.8);
-        this.graphics.fillCircle(0, 75/2, 15);
+        this.graphics.fillCircle(0, 75 / 2, 15);
         this.add(this.graphics);
 
-        this.apCost = this.scene.add.text(0, 75/2, this.spell.apCost, {
+        this.apCost = this.scene.add.text(0, 75 / 2, this.spell.apCost, {
             color: "#FFFFFF",
             fontSize: 30
         });
@@ -31,10 +33,17 @@ export default class SpellObject extends Phaser.GameObjects.Container {
 
         this.add(this.apCost);
 
-        var that = this;
-        this.spellSprite.on("pointerdown", function () {
-            that.scene.selected.spell = this.spell.id;
-            that.scene.setTiles();
+        this.spellSprite.on("pointerdown", () => {
+            this.scene.selected.spell = this.spell.id;
+            this.scene.setTiles();
+        });
+
+        this.spellSprite.on("pointerover", function () {
+            this.scene.ui.spellsInfo[this.spell.id].setVisible(true);
+        });
+
+        this.spellSprite.on("pointerout", function () {
+            this.scene.ui.spellsInfo[this.spell.id].setVisible(false);
         });
 
         return this;

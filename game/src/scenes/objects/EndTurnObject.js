@@ -16,7 +16,7 @@ export default class EndTurn extends Phaser.GameObjects.Container {
         this.okText.on("pointerdown", () => {
             var entity = this.scene.fight.getEntity(this.scene.me);
             if (entity) {
-                entity.endTurn();
+                entity.trigger("endTurn");
             }
         });
 
