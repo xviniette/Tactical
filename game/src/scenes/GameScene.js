@@ -146,9 +146,22 @@ export default class GameScene extends Phaser.Scene {
             y: 500,
             scene: this
         });
+
+        //Bind
+        this.input.keyboard.on('keydown', (event) => {
+            var index = event.keyCode - 49;
+            if (me.spells[index]) {
+                this.selected.spell = me.spells[index].id;
+                this.setTiles();
+            }
+        });
     }
 
     setTiles() {
+        if(!this.world){
+            return;
+        }
+
         var tiles = null;
         if (this.selected.spell) {
             var entity = this.fight.getEntity(this.me);
@@ -228,7 +241,10 @@ export default class GameScene extends Phaser.Scene {
             graphics.x = position.x;
             graphics.y = position.y;
 
+            graphics.setDepth((tile.x + tile.y) * 1000 + 1);
+
             this.tiles.add(graphics);
+            this.world.add(graphics);
         });
     }
 
@@ -244,11 +260,13 @@ export default class GameScene extends Phaser.Scene {
                     continue;
                 }
                 var tile = this.createIsometricSprite(i, j, "tile0");
+                tile.setDepth((i + j) * 1000);
 
                 this.world.add(tile);
 
                 if (this.fight.map.tiles[i][j] == 1) {
                     var tile = this.createIsometricSprite(i, j, "obstacle");
+                    tile.setDepth((i + j) * 1000 + 500);
                     this.world.add(tile);
                 }
             }
@@ -263,6 +281,7 @@ export default class GameScene extends Phaser.Scene {
                 entity: entity
             });
 
+
             entity.sprite.setScale(this.scaleValue);
         });
     }
@@ -274,6 +293,11 @@ export default class GameScene extends Phaser.Scene {
 
             this.setTiles();
         }
+
+        this.fight.getAliveEntities().forEach(entity => {
+            var p = this.getTilePosition(entity.sprite.x, entity.sprite.y);
+            entity.sprite.updateDepth(p.x, p.y);
+        });
     }
 
     action(x, y) {

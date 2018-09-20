@@ -80,7 +80,6 @@ export default class EventHandler {
     }
 
     endTurn() {
-        console.log("END TURN")
         this.nextTrigger();
     }
 

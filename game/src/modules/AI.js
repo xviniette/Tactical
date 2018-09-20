@@ -12,7 +12,6 @@ export default class AI extends Entity {
     }
 
     play() {
-        console.log("AI TURN")
         var castables = [];
 
         var movementTiles = this.getAccessibleMovementTiles(true);

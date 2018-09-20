@@ -33,7 +33,15 @@ export default class EntityObject extends Phaser.GameObjects.Container {
         this.add(this.turnIndicator);
 
         this.updateCharacteristics();
+        this.updateDepth();
         return this;
+    }
+
+    updateDepth(x, y){
+        var eX = x || this.entity.x;
+        var eY = y || this.entity.y;
+
+        this.setDepth((eX + eY) * 1000 + 500);
     }
 
     addText(x = 0, y = 0, style = {}) {

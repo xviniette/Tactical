@@ -109,7 +109,6 @@ export default class SpellInfo extends Phaser.GameObjects.Container {
         //Effect
         var effectsData = [];
         this.spell.effects.forEach(effect => {
-            console.log(effect);
             if (Effects[effect.effect] && Effects[effect.effect].description) {
                 effectsData.push(Effects[effect.effect].description(effect));
             }
