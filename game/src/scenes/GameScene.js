@@ -266,6 +266,7 @@ export default class GameScene extends Phaser.Scene {
 
                 if (this.fight.map.tiles[i][j] == 1) {
                     var tile = this.createIsometricSprite(i, j, "obstacle");
+                    console.log("profondeur", (i + j) * 1000 + 500);
                     tile.setDepth((i + j) * 1000 + 500);
                     this.world.add(tile);
                 }
