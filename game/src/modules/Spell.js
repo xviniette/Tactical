@@ -211,7 +211,7 @@ export default class Spell {
     checkCooldown() {
         //Initial cd
         if (this.initialCooldown > 0) {
-            if (this.initialCooldown >= this.fight.turn) {
+            if (this.initialCooldown > this.fight.turn) {
                 return false;
             }
         }
@@ -219,7 +219,7 @@ export default class Spell {
         //cooldown
         if (this.cooldown > 0) {
             if (this.historic.find((history) => {
-                    return history.turn >= this.fight.turn - this.cooldown;
+                    return history.turn > this.fight.turn - this.cooldown;
                 })) {
                 return false;
             }
@@ -240,18 +240,19 @@ export default class Spell {
     }
 
     getCooldown() {
-        if (this.cooldown > 0) {
-            //Initial
-            if (this.cooldown > this.turn.fight) {
-                return this.cooldown - this.fight.turn;
+          //Initial cd
+          if (this.initialCooldown > 0) {
+            if (this.initialCooldown > this.fight.turn) {
+                return this.initialCooldown - this.fight.turn;
             }
+        }
 
-            var lastCast = this.historic.find((history) => {
-                return history.turn <= this.fight.turn - this.cooldown;
-            });
-
-            if (lastCast) {
-                return lastCast.turn + this.cooldown - this.fight.turn;
+        //cooldown
+        if (this.cooldown > 0) {
+            if (this.historic.find((history) => {
+                    return history.turn > this.fight.turn - this.cooldown;
+                })) {
+                    return history.turn - (this.fight.turn - this.cooldown);
             }
         }
 

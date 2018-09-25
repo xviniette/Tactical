@@ -321,10 +321,6 @@ export default class GameScene extends Phaser.Scene {
                     x: x,
                     y: y
                 });
-
-                this.ui.spells.each((spell) => {
-                    spell.update();
-                });
             }
         } else {
             entity.trigger("move", {

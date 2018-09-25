@@ -106,7 +106,6 @@
             "team": 2,
             "x": 3,
             "defaultCharacteristics": {
-                "initiative": 80
             },
             "y": 3,
             "sprite": "monster1",
