@@ -1,4 +1,4 @@
-import assetFiles from "../../assets.json";
+import assets from "../config/assets.json";
 
 export default class EntityObject extends Phaser.GameObjects.Container {
     constructor(config) {
@@ -11,7 +11,7 @@ export default class EntityObject extends Phaser.GameObjects.Container {
         
         //SPRITE
         this.entitySprite = this.scene.add.sprite(0, 0, config.entity.sprite);
-        var assetData = assetFiles.image[config.entity.sprite];
+        var assetData = assets.image[config.entity.sprite];
         this.entitySprite.setOrigin(assetData.anchorX / assetData.width, assetData.anchorY / assetData.height);
         this.add(this.entitySprite);
 

@@ -1,4 +1,4 @@
-import assetFiles from "../../assets.json";
+import assets from "../config/assets.json";
 
 export default class EntityObject extends Phaser.GameObjects.Container {
     constructor(config) {

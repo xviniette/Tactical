@@ -3,11 +3,15 @@
 </template>
 
 <script>
+import "phaser";
+
 import Fight from "../modules/Fight.js";
 import Map from "../modules/Map.js";
 import Player from "../modules/Player.js";
 import AI from "../modules/AI.js";
 import Spell from "../modules/Spell.js";
+
+import GameScene from "../phaser/GameScene.js"
 
 export default {
     name: 'Fight',
@@ -33,7 +37,7 @@ export default {
 
             if (this.FightObject.entities) {
                 this.FightObject.entities.forEach(entity => {
-                    var e;
+                    let e;
                     var data = Object.assign(entity, { fight: this.fight });
                     if (entity.ai) {
                         e = new AI(data);
@@ -43,7 +47,7 @@ export default {
 
                     if (entity.spells) {
                         entity.spells.forEach(spell => {
-                            var s = new Spell(spell);
+                            const s = new Spell(spell);
                             s.fight = this.fight;
                             s.entity = e;
                             e.spells.push(s);
@@ -55,10 +59,27 @@ export default {
             }
 
             this.fight.start();
+        },
+        createPhaser() {
+            this.phaser = new Phaser.Game({
+                type: Phaser.WEBGL,
+                parent: 'content',
+                width: 1024,
+                height: 780,
+            });
+
+            this.phaser.scene.add("Game", GameScene);
+            this.phaser.scene.start("Game", { vue: this, fight: this.fight });
         }
     },
     mounted() {
         this.createGame();
+        this.createPhaser();
+    },
+    beforeDestroy() {
+        if (this.phaser) {
+            this.phaser.destroy();
+        }
     }
 }
 </script>

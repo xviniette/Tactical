@@ -1,4 +1,4 @@
-import COLORS from "../COLORS.json"
+import colors from "../config/colors.json"
 
 export default class EventHandler {
     constructor(data = {}) {
@@ -87,7 +87,7 @@ export default class EventHandler {
         var position = this.scene.getIsometricPosition(data.x, data.y);
         var text = this.scene.add.text(position.x, position.y - 80, data.value, {
             fontSize: "30px",
-            color: COLORS[data.characteristic] ? COLORS[data.characteristic] : "#FFFFFF",
+            color: colors[data.characteristic] ? colors[data.characteristic] : "#FFFFFF",
             stroke: "#FFFFFF",
             strokeThickness: 5
         }).setOrigin(0.5, 0.5).setVisible(false);

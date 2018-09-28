@@ -1,21 +1,12 @@
-import assetFiles from "../assets.json";
-import jsonFight from "../fight.json";
-import spells from "../spells.json";
-
-import EntityObject from "./objects/EntityObject.js"
-import SpellsObject from "./objects/SpellsObject.js"
-import EndTurnObject from "./objects/EndTurnObject.js"
-import SpellInfo from "./objects/SpellInfo.js"
-
-import EventHandler from "./objects/EventHandler.js"
+import assets from "../config/assets.json"
+import EntityObject from "./EntityObject.js"
+import EventHandler from "./EventHandler.js"
 
 export default class GameScene extends Phaser.Scene {
     constructor(config) {
         super({
-            key: 'GameScene'
+            key: 'Game'
         });
-
-        
 
         this.tilesize = {
             x: 120,
@@ -34,22 +25,52 @@ export default class GameScene extends Phaser.Scene {
 
         this.world;
         this.tiles;
-        this.ui = {}
 
         this.fight;
-        this.me = 0;
-
-
-        this.selected = {
-            spell: null,
-            entity: null
-        }
+        this.vue;
 
         this.eventHandler = new EventHandler({
             scene: this
         });
+    }
 
-        this.tweenHistoric = [];
+    init(data) {
+        this.fight = data.fight;
+        this.vue = data.vue;
+    }
+
+    preload() {
+        const progress = this.add.graphics();
+
+        this.load.on('progress', (value) => {
+            progress.clear();
+            progress.fillStyle(0xffffff, 1);
+            progress.fillRect(0, this.sys.game.config.height / 2, this.sys.game.config.width * value, 60);
+        });
+
+        this.load.on('complete', () => {
+            progress.destroy();
+        });
+
+        for (var type in assets) {
+            for (var assetName in assets[type]) {
+                var path = assets[type][assetName];
+                if (typeof assets[type][assetName] == "object") {
+                    path = assets[type][assetName].path;
+                }
+
+                path = `${process.env.BASE_URL}${path}`
+
+                switch (type) {
+                    case "image":
+                        this.load.image(assetName, path);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
     }
 
     create() {
@@ -59,104 +80,25 @@ export default class GameScene extends Phaser.Scene {
             this.eventHandler.on(e.detail);
         });
 
-        this.setGame();
         this.setGameRenderer();
-        this.fight.start();
-
 
         this.input.on('pointerdown', () => {
             this.action(this.isoMouse.x, this.isoMouse.y);
         });
     }
 
-    setGame() {
-        this.fight = new Fight({
-            scene: this
-        });
-        this.fight.map = new Map(Object.assign(jsonFight.map, {
-            fight: this.fight
-        }));
-
-        for (var entity of jsonFight.players) {
-            var e = new Player(Object.assign(entity, {
-                fight: this.fight
-            }));
-            e.spells = [];
-            for (var spell of entity.spells) {
-                var s = new Spell(spell);
-                s.fight = this.fight;
-                s.entity = e;
-                e.spells.push(s);
-            }
-            this.fight.entities.push(e);
-        }
-
-        for (var entity of jsonFight.ais) {
-            var e = new AI(Object.assign(entity, {
-                fight: this.fight
-            }));
-            e.spells = [];
-            for (var spell of entity.spells) {
-                var s = new Spell(spell);
-                s.fight = this.fight;
-                s.entity = e;
-                e.spells.push(s);
-            }
-            this.fight.entities.push(e);
-        }
-
-    }
-
     setGameRenderer() {
         this.add.image(0, 0, "background").setScale(2.5);
         this.setWorld();
-        this.setUI();
-
         this.setTiles();
     }
 
-    setUI() {
-        var me = this.fight.getEntity(this.me);
-        if (!me) {
-            return;
-        }
-
-        this.ui.spellsInfo = {};
-        me.spells.forEach(spell => {
-            this.ui.spellsInfo[spell.id] = new SpellInfo({
-                x: this.game.config.width / 2 - 150,
-                y: this.game.config.height / 2 - 200,
-                spell: spell,
-                scene: this
-            });
-        });
-
-        this.ui.spells = new SpellsObject({
-            x: 75,
-            y: this.game.config.height - 75,
-            scene: this
-        });
-
-        this.ui.endTurn = new EndTurnObject({
-            x: 900,
-            y: 500,
-            scene: this
-        });
-
-        //Bind
-        this.input.keyboard.on('keydown', (event) => {
-            var index = event.keyCode - 49;
-            if (me.spells[index]) {
-                this.selected.spell = me.spells[index].id;
-                this.setTiles();
-            }
-        });
-    }
-
     setTiles() {
-        if(!this.world){
+        if (!this.world) {
             return;
         }
+
+        return;
 
         var tiles = null;
         if (this.selected.spell) {
@@ -247,7 +189,7 @@ export default class GameScene extends Phaser.Scene {
     setWorld() {
         this.world = this.add.container();
 
-        var tileAsset = assetFiles.image.tile0;
+        var tileAsset = assets.image.tile0;
         this.scaleValue = this.tilesize.x / tileAsset.width;
 
         for (var i = 0; i < this.fight.map.tiles.length; i++) {
@@ -262,7 +204,6 @@ export default class GameScene extends Phaser.Scene {
 
                 if (this.fight.map.tiles[i][j] == 1) {
                     var tile = this.createIsometricSprite(i, j, "obstacle");
-                    console.log("profondeur", (i + j) * 1000 + 500);
                     tile.setDepth((i + j) * 1000 + 500);
                     this.world.add(tile);
                 }
@@ -334,8 +275,8 @@ export default class GameScene extends Phaser.Scene {
     }
 
     getAssetData(assetName, type = "image") {
-        if (assetFiles[type] && assetFiles[type][assetName]) {
-            return assetFiles[type] && assetFiles[type][assetName];
+        if (assets[type] && assets[type][assetName]) {
+            return assets[type] && assets[type][assetName];
         }
 
         return null;
