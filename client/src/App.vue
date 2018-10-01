@@ -75,6 +75,7 @@ export default {
         },
         {
           "name": "Vache",
+          "ai": true,
           "team": 2,
           "x": 6,
           "y": 4,
@@ -119,9 +120,9 @@ export default {
 </script>
 
 <style>
-body{
+body {
   background-color: black;
-  margin:0px;
-  padding:0;
+  margin: 0px;
+  padding: 0;
 }
 </style>

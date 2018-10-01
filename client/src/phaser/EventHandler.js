@@ -22,6 +22,7 @@ export default class EventHandler {
     }
 
     on(event) {
+        console.log(event);
         if (this[event.type]) {
             this[event.type](event);
         }

@@ -1,10 +1,20 @@
 <template>
-    <div>
+    <div class="fight">
         <div id="canvas"></div>
-        <div class="spells">
-            <div class="spell" v-for="spell in spells" :key="spell.id" style="width:8vh" @click="selectedSpell = spell.id">
-                {{spell.name}}
-                <img :src="spell.src" width="100%">
+        <div class="ui" v-if="fight">
+            <div class="spells">
+                <div class="spell" v-for="spell in spells" :key="spell.id" @click="selectedSpell = spell.id">
+                    {{spell.name}}
+                    <img :src="spell.src" width="100%">
+                </div>
+            </div>
+
+            <div class="endTurn" @click="endTurn">
+                END TURN
+            </div>
+
+            <div class="timeline">
+                <div v-for="entity in fight.getAliveEntities()" :key="entity.id" :class="{'currentEntity':getCurrentEntity.id == entity.id}">{{entity.name}}</div>
             </div>
         </div>
     </div>
@@ -108,6 +118,9 @@ export default {
             if (this.phaser.isBooted) resize();
             else this.phaser.events.once('boot', resize);
         },
+        endTurn(){
+            this.myEntity.trigger("endTurn");
+        }
     },
     computed: {
         myEntity() {
@@ -130,7 +143,19 @@ export default {
             }
 
             return [];
-        }
+        },
+        getAliveEntities() {
+            if (this.fight) {
+                return [...this.fight.getAliveEntities()];
+            }
+            return [];
+        },
+        getCurrentEntity() {
+            if (this.fight) {
+                return this.fight.currentEntity;
+            }
+            return null;
+        },
     },
     mounted() {
         this.createGame();
@@ -145,17 +170,40 @@ export default {
 </script>
 
 <style scoped>
+.fight {
+  color: white;
+}
+
+.ui {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 .spells {
   position: fixed;
-  bottom: 4vh;
+  bottom: 2vh;
+  left: 2vh;
   text-align: center;
 }
 
 .spell {
   display: inline-block;
+  width: 8vh;
   margin: 0 1vh;
   color: white;
   text-align: center;
   cursor: pointer;
+}
+
+.endTurn {
+  position: fixed;
+  bottom: 2vh;
+  right: 2vh;
+  color: white;
+}
+
+.currentEntity {
+  color: yellow;
 }
 </style>
