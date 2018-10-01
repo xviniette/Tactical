@@ -15,11 +15,6 @@ export default class EntityObject extends Phaser.GameObjects.Container {
         this.entitySprite.setOrigin(assetData.anchorX / assetData.width, assetData.anchorY / assetData.height);
         this.add(this.entitySprite);
 
-        //STATS
-        this.life = this.addText(0, 50, {
-            color: "#D30A0A"
-        });
-
         //ARROW
         this.turnIndicator = this.scene.add.sprite(0, -250, "arrow").setOrigin(0.5, 1).setFlipY(true).setVisible(false);
         this.scene.tweens.add({
@@ -44,20 +39,6 @@ export default class EntityObject extends Phaser.GameObjects.Container {
         this.setDepth((eX + eY) * 1000 + 500);
     }
 
-    addText(x = 0, y = 0, style = {}) {
-        var text = this.scene.add.text(x, y, "", Object.assign({
-            fontSize: "60px",
-            color: "#FFFFFF",
-            strokeThickness: 20,
-            stroke: "#FFFFFF"
-        }, style));
-
-        text.setOrigin(0.5, 0.5);
-        this.add(text);
-
-        return text;
-    }
-
     updateCharacteristics() {
         this.characteristics = this.entity.getCharacteristics();
 
@@ -66,7 +47,5 @@ export default class EntityObject extends Phaser.GameObjects.Container {
         }else{
             this.visible = true;
         }
-
-        this.life.setText(this.characteristics.currentLife);
     }
 }

@@ -71,22 +71,6 @@ export default {
               "duration": 999999
             }],
             "cooldown": 2
-          },
-          {
-            "name": "Sauter",
-            "minRange": 1,
-            "maxRange": 5,
-            "los": false,
-            "apCost": 3,
-            "aoe": [
-              [
-                1
-              ]
-            ],
-            "effects": [{
-              "target": "entity",
-              "effect": "moved"
-            }]
           }]
         },
         {
@@ -134,5 +118,10 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+body{
+  background-color: black;
+  margin:0px;
+  padding:0;
+}
 </style>
