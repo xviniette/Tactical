@@ -185,10 +185,6 @@ export default class EventHandler {
                 _this.nextTrigger();
             }
         });
-
-        this.scene.ui.spells.each((spell) => {
-            spell.update();
-        });
     }
 
     teleport(data) {

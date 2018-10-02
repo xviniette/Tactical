@@ -6,15 +6,38 @@
                 <div class="spell" v-for="spell in spells" :key="spell.id" @click="selectedSpell = spell.id">
                     {{spell.name}}
                     <img :src="spell.src" width="100%">
+                    <!-- <div class="spellInfo">
+                        <ul>
+                            <li>{{spell.name}}</li>
+                            <li>AP : {{spell.apCost}}</li>
+                            <li>Range : {{spell.minRange}}-{{spell.maxRange}}<span v-if="spell.boostRange">+</span></li>
+                            <li>
+                                <svg></svg>
+                            </li>
+                        </ul>
+                    </div> -->
+                </div>
+
+                <div class="endTurn" @click="endTurn">
+                    END TURN
                 </div>
             </div>
 
-            <div class="endTurn" @click="endTurn">
-                END TURN
+            <div class="timeline">
+                <div v-for="entity in fight.getAliveEntities()" :key="entity.id" :class="{'currentEntity':getCurrentEntity.id == entity.id}">
+                    {{entity.name}} - {{entity.characteristics.currentLife}}
+                </div>
             </div>
 
-            <div class="timeline">
-                <div v-for="entity in fight.getAliveEntities()" :key="entity.id" :class="{'currentEntity':getCurrentEntity.id == entity.id}">{{entity.name}}</div>
+            <div class="profiles">
+                <div v-for="entity in fight.getAliveEntities()" :key="entity.id">
+                    {{entity.name}}
+                    <ul>
+                        <template v-for="(value, attr) in entity.characteristics">
+                            <li v-if="value != 0">{{attr}} : {{value}}</li>
+                        </template>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -49,10 +72,11 @@ export default {
     methods: {
         createGame() {
             this.fight = new Fight({});
-
             this.fight.map = new Map(Object.assign(this.FightObject.map, {
                 fight: this.fight
             }));
+
+            window.fight = this.fight;
 
             if (this.FightObject.entities) {
                 this.FightObject.entities.forEach(entity => {
@@ -118,7 +142,7 @@ export default {
             if (this.phaser.isBooted) resize();
             else this.phaser.events.once('boot', resize);
         },
-        endTurn(){
+        endTurn() {
             this.myEntity.trigger("endTurn");
         }
     },
