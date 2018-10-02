@@ -98,42 +98,32 @@ export default class GameScene extends Phaser.Scene {
             return;
         }
 
-        return;
-
         var tiles = null;
-        if (this.selected.spell) {
-            var entity = this.fight.getEntity(this.me);
-            if (entity) {
-                var spell = entity.spells.find((s) => {
-                    return s.id == this.selected.spell
-                });
-                if (spell) {
-                    tiles = spell.getCastableCells();
+        if (this.vue.selectedSpell) {
+            var spell = this.vue.selectedSpell;
 
-                    var aoeTiles = spell.getAoeTiles(this.isoMouse.x, this.isoMouse.y);
+            tiles = spell.getCastableCells();
 
-                    tiles.forEach((tile) => {
-                        if (tile.castable) {
-                            tile.fillColor = 0x4688f2;
-                        } else {
-                            tile.fillColor = 0x82adf2;
-                        }
-                    });
+            var aoeTiles = spell.getAoeTiles(this.isoMouse.x, this.isoMouse.y);
 
-                    if (tiles.find((tile) => {
-                            return tile.castable && tile.x == this.isoMouse.x && tile.y == this.isoMouse.y;
-                        })) {
-                        aoeTiles.forEach((tile) => {
-                            tile.fillColor = 0xef9c28;
-                            tiles.push(tile);
-                        });
-                    }
+            tiles.forEach((tile) => {
+                if (tile.castable) {
+                    tile.fillColor = 0x4688f2;
+                } else {
+                    tile.fillColor = 0x82adf2;
                 }
-            }
-        } else if (this.selected.entity) {
+            });
 
+            if (tiles.find((tile) => {
+                    return tile.castable && tile.x == this.isoMouse.x && tile.y == this.isoMouse.y;
+                })) {
+                aoeTiles.forEach((tile) => {
+                    tile.fillColor = 0xef9c28;
+                    tiles.push(tile);
+                });
+            }
         } else {
-            var entity = this.fight.getEntity(this.me);
+            var entity = this.vue.myEntity;
             if (entity) {
                 tiles = entity.getMovementTiles();
 
@@ -239,7 +229,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     action(x, y) {
-        var entity = this.fight.getEntity(this.me);
+        var entity = this.vue.myEntity;
         if (!entity) {
             return false;
         }
@@ -248,19 +238,13 @@ export default class GameScene extends Phaser.Scene {
             return false;
         }
 
-        if (this.selected.spell) {
-            var spell = entity.spells.find((spell) => {
-                return spell.id == this.selected.spell;
-            });
+        if (this.vue.selectedSpell) {
+            var spell = this.vue.selectedSpell;
             if (spell) {
                 entity.trigger("cast", {
                     spell: spell.id,
                     x: x,
                     y: y
-                });
-
-                this.ui.spells.each((spell) => {
-                    spell.update();
                 });
             }
         } else {
@@ -270,7 +254,7 @@ export default class GameScene extends Phaser.Scene {
             });
         }
 
-        this.selected.spell = null;
+        this.vue.selectedSpell = null;
         this.setTiles();
     }
 

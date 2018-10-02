@@ -45,6 +45,10 @@ export default class Fight extends Element {
             return false;
         }
 
+        if(this.isOver()){
+            return false;
+        }
+
         var entity;
 
         if (!this.currentEntity) {

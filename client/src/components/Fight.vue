@@ -3,7 +3,7 @@
         <div id="canvas"></div>
         <div class="ui" v-if="fight">
             <div class="spells">
-                <div class="spell" v-for="spell in spells" :key="spell.id" @click="selectedSpell = spell.id">
+                <div class="spell" v-for="spell in spells" :key="spell.id" @click="selectSpell(spell)" :class="{'selected':selectedSpell && selectedSpell.id == spell.id}">
                     {{spell.name}}
                     <img :src="spell.src" width="100%">
                     <!-- <div class="spellInfo">
@@ -66,6 +66,7 @@ export default {
         return {
             fight: null,
             phaser: null,
+            scene: null,
             selectedSpell: null
         }
     },
@@ -116,6 +117,8 @@ export default {
 
             this.phaser.scene.add("Game", GameScene);
             this.phaser.scene.start("Game", { vue: this, fight: this.fight });
+            console.log( this.phaser);
+            this.scene = this.phaser.scene.scenes[0];
 
             var resize = () => {
                 var w = window.innerWidth;
@@ -144,6 +147,9 @@ export default {
         },
         endTurn() {
             this.myEntity.trigger("endTurn");
+        },
+        selectSpell(spell) {
+            this.selectedSpell = spell;
         }
     },
     computed: {
@@ -229,5 +235,9 @@ export default {
 
 .currentEntity {
   color: yellow;
+}
+
+.selected {
+  background-color: blue;
 }
 </style>
