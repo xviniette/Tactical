@@ -6,16 +6,22 @@
                 <div class="spell" v-for="spell in spells" :key="spell.id" @click="selectSpell(spell)" :class="{'selected':selectedSpell && selectedSpell.id == spell.id}">
                     {{spell.name}}
                     <img :src="spell.src" width="100%">
-                    <!-- <div class="spellInfo">
+                    <div class="spellInfo">
                         <ul>
                             <li>{{spell.name}}</li>
                             <li>AP : {{spell.apCost}}</li>
                             <li>Range : {{spell.minRange}}-{{spell.maxRange}}<span v-if="spell.boostRange">+</span></li>
                             <li>
-                                <svg></svg>
+                                <svg :width="spell.aoe.length * 5" :height="spell.aoe[0].length * 5">
+                                    <template v-for="(aoex, x) in spell.aoe">
+                                        <template v-for="(aoe, y) in spell.aoex">
+                                            <rect v-if="aoe" :width="5" :height="5" :x="5 * x" :y="5 * y" style="fill:rgb(0,0,255);stroke:rgb(0,0,0)" />
+                                        </template>
+                                    </template>
+                                </svg>
                             </li>
                         </ul>
-                    </div> -->
+                    </div>
                 </div>
 
                 <div class="endTurn" @click="endTurn">
@@ -24,7 +30,7 @@
             </div>
 
             <div class="timeline">
-                <div v-for="entity in fight.getAliveEntities()" :key="entity.id" :class="{'currentEntity':getCurrentEntity.id == entity.id}">
+                <div v-for="entity in fight.getAliveEntities()" :key="entity.id" :class="{'currentEntity':getCurrentEntity && getCurrentEntity.id == entity.id}">
                     {{entity.name}} - {{entity.characteristics.currentLife}}
                 </div>
             </div>
@@ -39,6 +45,8 @@
                     </ul>
                 </div>
             </div>
+
+            <div>Tours : {{fight.turn}}</div>
         </div>
     </div>
 </template>
@@ -103,7 +111,6 @@ export default {
                 });
             }
 
-            this.fight.start();
         },
         createPhaser() {
             const config = {
@@ -117,8 +124,6 @@ export default {
 
             this.phaser.scene.add("Game", GameScene);
             this.phaser.scene.start("Game", { vue: this, fight: this.fight });
-            console.log( this.phaser);
-            this.scene = this.phaser.scene.scenes[0];
 
             var resize = () => {
                 var w = window.innerWidth;
@@ -190,6 +195,9 @@ export default {
     mounted() {
         this.createGame();
         this.createPhaser();
+        setTimeout(() => {
+            this.fight.start();
+        }, 500);
     },
     beforeDestroy() {
         if (this.phaser) {

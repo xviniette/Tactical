@@ -72,7 +72,7 @@ export default class EventHandler {
 
         var _this = this;
         this.scene.time.addEvent({
-            delay: data.tile.path.length * tileDuration,
+            delay: data.tile.path.length * tileDuration + 500,
             callback() {
                 _this.nextTrigger();
             }
@@ -81,7 +81,13 @@ export default class EventHandler {
     }
 
     endTurn() {
-        this.nextTrigger();
+        var _this = this;
+        this.scene.time.addEvent({
+            delay: 500,
+            callback() {
+                _this.nextTrigger();
+            }
+        });
     }
 
     textEffect(data = {}, delay = 0) {
@@ -114,7 +120,7 @@ export default class EventHandler {
         var executeTime;
         if (this.characteristicsDelay[data.entity.id] && this.characteristicsDelay[data.entity.id] > Date.now()) {
             executeTime = this.characteristicsDelay[data.entity.id] + 800;
-        }else{
+        } else {
             executeTime = Date.now() + 200;
         }
 
