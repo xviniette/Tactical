@@ -1,0 +1,9 @@
+{
+    "onCast": "onCast",
+    "onStart": "onStart",
+    "onRemoveEffect": "onRemoveEffect",
+    "onTurnStart": "onTurnStart",
+    "onSourceTurnStart": "onSourceTurnStart",
+    "onTurnEnd": "onTurnEnd",
+    "onSourceTurnEnd": "onSourceTurnEnd"
+}
