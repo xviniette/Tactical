@@ -32,45 +32,6 @@ export default class PreloaderScene extends Phaser.Scene {
     }
 
     create() {
-        this.anims.create({
-            key: "warph",
-            frames: this.anims.generateFrameNumbers("warph"),
-            frameRate: 20,
-            yoyo: true,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: "warpv",
-            frames: this.anims.generateFrameNumbers("warpv"),
-            frameRate: 20,
-            yoyo: true,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: "grass",
-            frames: this.anims.generateFrameNumbers("grass"),
-            frameRate: 5,
-            yoyo: true,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: "explosion",
-            frames: this.anims.generateFrameNumbers("explosion", {
-                frames: [0, 1, 1, 1, 1, 2, 3, 4, 5, 6, 7]
-            }),
-            frameRate: 40,
-        });
-
-        this.anims.create({
-            key: "bomb",
-            frames: this.anims.generateFrameNumbers("bomb"),
-            frameRate: 10,
-            repeat: -1
-        });
-
         this.load.off('progress', this.updateProgressDisplay, this);
         this.scene.start("Controller");
     }

@@ -1,7 +1,7 @@
 import uuid from "uuid/v1"
 
-import Effects from "./effects/Effects.js"
-import GameEvent from "./GameEvent.js"
+import Effects from "./effects/Effects"
+import GameEvent from "./GameEvent"
 import Triggers from "./effects/Triggers.json"
 import Element from "./Element"
 

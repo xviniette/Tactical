@@ -3,13 +3,6 @@ import BootScene from './Scene/BootScene';
 import PreloaderScene from './Scene/PreloaderScene';
 import Controller from './Scene/Controller';
 
-import TutorialScene from './Scene/TutorialScene';
-import HomeScene from './Scene/HomeScene';
-import GameScene from './Scene/GameScene';
-import ParametersScene from './Scene/ParameterScene';
-import ProfileScene from './Scene/ProfileScene';
-import RankingScene from './Scene/RankingScene';
-
 import config from './config';
 
 var game;
@@ -40,13 +33,7 @@ window.onload = () => {
         scene: [
             BootScene,
             PreloaderScene,
-            TutorialScene,
-            GameScene,
-            ParametersScene,
-            HomeScene,
             Controller,
-            ProfileScene,
-            RankingScene
         ],
     });
 

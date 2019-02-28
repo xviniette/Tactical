@@ -1,7 +1,5 @@
-"use strict";
-
-import Map from "./Map.js";
-import Element from "./Element.js"
+import Map from "./Map";
+import Element from "./Element"
 
 export default class Fight extends Element {
     constructor(json) {
