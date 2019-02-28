@@ -1,10 +1,8 @@
-"use strict";
-
-import Entity from "./Entity.js"
+import Entity from "./Entity"
 
 export default class Player extends Entity {
     constructor(json) {
-        super();
+        super(json);
 
         this.init(json);
     }

@@ -1,16 +1,16 @@
-"use strict";
+import uuid from "uuid/v1"
 
-import Element from "./Element.js"
-import GameEvent from "./GameEvent.js"
+import Element from "./Element"
+import GameEvent from "./GameEvent"
 import Triggers from "./effects/Triggers.json"
 
 export default class Entity extends Element {
     constructor(json) {
-        super();
+        super(json);
 
         this.fight;
 
-        this.id = Math.random().toString(36).substr(2, 9);
+        this.id = uuid();
 
         this.x = 0;
         this.y = 0;
@@ -18,6 +18,9 @@ export default class Entity extends Element {
         this.alive = true;
 
         this.team;
+
+        this.father;
+        this.fatherDieRecursive = false;
 
         this.defaultCharacteristics = {
             ap: 6,
@@ -33,14 +36,14 @@ export default class Entity extends Element {
             resistance: 0,
             range: 0,
             dodge: 0,
-            lock: 0
+            lock: 0,
         }
 
         this.currentCharacteristics = {
+            usedAP: 0,
+            usedMP: 0,
             damageTaken: 0,
             erosionTaken: 0,
-            usedAP: 0,
-            usedMP: 0
         }
 
         this.characteristics = {};
@@ -49,6 +52,8 @@ export default class Entity extends Element {
         this.items = [];
 
         this.sprite;
+
+        this.init(json);
     }
 
     play() {

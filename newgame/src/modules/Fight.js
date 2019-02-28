@@ -5,27 +5,24 @@ import Element from "./Element.js"
 
 export default class Fight extends Element {
     constructor(json) {
-        super();
+        super(json);
 
         this.map = new Map({
             fight: this
         });
+
         this.entities = [];
-        this.turn = 1;
         this.currentEntity = null;
+        
+        this.turn = 1;
         this.timer = null;
         this.turnTime = null;
-
-        this.effects = [];
-
-        this.isServer = false;
 
         this.init(json)
     }
 
     start() {
         this.orderEntities();
-
         this.nextEntity();
     }
 
@@ -45,7 +42,7 @@ export default class Fight extends Element {
             return false;
         }
 
-        if(this.isOver()){
+        if (this.isOver()) {
             return false;
         }
 

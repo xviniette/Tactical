@@ -4,7 +4,7 @@ import Element from "./Element.js"
 
 export default class Map extends Element {
     constructor(json) {
-        super();
+        super(json);
 
         this.fight;
         this.tiles = [
@@ -79,7 +79,10 @@ export default class Map extends Element {
             for (var j = y - range; j <= y + range; j++) {
                 var distance = Math.abs(i - x) + Math.abs(j - y);
                 if (distance > 0 && distance <= range && this.isCell(i, j)) {
-                    cells.push({ x: i, y: j });
+                    cells.push({
+                        x: i,
+                        y: j
+                    });
                 }
             }
         }
@@ -93,9 +96,7 @@ export default class Map extends Element {
         var cells = this.getCellsAround(x, y, range);
 
         cells.forEach((cell) => {
-            var entity = this.fight.getAliveEntities().find((e) => {
-                return e.x == cell.x && e.y == cell.y;
-            });
+            var entity = this.getCellEntity(cell.x, cell.y);
 
             if (entity) {
                 entities.push(entity);
@@ -152,12 +153,21 @@ export default class Map extends Element {
                     error -= ddx;
 
                     if (error + errorprev < ddx) {
-                        pts.push({ 'x': x, 'y': y - ystep });
+                        pts.push({
+                            'x': x,
+                            'y': y - ystep
+                        });
                     } else if (error + errorprev > ddx) {
-                        pts.push({ 'x': x - xstep, 'y': y });
+                        pts.push({
+                            'x': x - xstep,
+                            'y': y
+                        });
                     }
                 }
-                pts.push({ 'x': x, 'y': y });
+                pts.push({
+                    'x': x,
+                    'y': y
+                });
                 errorprev = error;
             }
         } else {
@@ -170,12 +180,21 @@ export default class Map extends Element {
                     x += xstep;
                     error -= ddy;
                     if (error + errorprev < ddy) {
-                        pts.push({ 'x': x - xstep, 'y': y });
+                        pts.push({
+                            'x': x - xstep,
+                            'y': y
+                        });
                     } else if (error + errorprev > ddy) {
-                        pts.push({ 'x': x, 'y': y - ystep });
+                        pts.push({
+                            'x': x,
+                            'y': y - ystep
+                        });
                     }
                 }
-                pts.push({ 'x': x, 'y': y });
+                pts.push({
+                    'x': x,
+                    'y': y
+                });
                 errorprev = error;
             }
         }
@@ -187,12 +206,12 @@ export default class Map extends Element {
             }
 
             if (entitiesBlock && this.fight.getAliveEntities().find((e) => {
-                if (ignoredEntity) {
-                    return e.x == pt.x && e.y == pt.y && e.id != ignoredEntity;
-                } else {
-                    return e.x == pt.x && e.y == pt.y;
-                }
-            })) {
+                    if (ignoredEntity) {
+                        return e.x == pt.x && e.y == pt.y && e.id != ignoredEntity;
+                    } else {
+                        return e.x == pt.x && e.y == pt.y;
+                    }
+                })) {
                 return false;
             }
         }

@@ -1,15 +1,18 @@
-"use strict";
+import uuid from "uuid/v1"
 
 import Effects from "./effects/Effects.js"
 import GameEvent from "./GameEvent.js"
 import Triggers from "./effects/Triggers.json"
+import Element from "./Element"
 
-export default class Spell {
+export default class Spell extends Element {
     constructor(json = {}) {
+        super(json);
+
         this.fight;
         this.entity;
 
-        this.id = Math.random().toString(36).substr(2, 9);
+        this.id = uuid();
         this.name;
         this.description;
 
@@ -43,12 +46,6 @@ export default class Spell {
         this.historic = [];
 
         this.init(json);
-    }
-
-    init(json = {}) {
-        for (var i in json) {
-            this[i] = json[i];
-        }
     }
 
     getComputedMaxRange() {
